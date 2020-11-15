@@ -3,6 +3,10 @@ package tv.tirco.headhunter.database;
 import java.util.HashMap;
 import java.util.UUID;
 
+import net.md_5.bungee.api.ChatColor;
+import tv.tirco.headhunter.HeadHunter;
+import tv.tirco.headhunter.MessageHandler;
+
 public class PlayerProfile {
 	
 	private final String playerName;
@@ -13,23 +17,58 @@ public class PlayerProfile {
 	private HashMap<Integer,Boolean> found;
 	
 	// When loading from file etc.
-	/**
-	 * 
-	 */
+	
 	public PlayerProfile(String playerName, UUID uuid, HashMap<Integer,Boolean> found) {
 		this.playerName = playerName;
 		this.setUuid(uuid);
 		this.setFound(found);
 		this.setLoaded(true);
 	}
+	
+		public PlayerProfile(String playerName) {
+		this(playerName, null);
+	}
 
+	public PlayerProfile(String playerName, UUID uuid) {
+		this.uuid = uuid;
+		this.playerName = playerName;
+	}
+
+	public PlayerProfile(String playerName, boolean isLoaded) {
+		this(playerName);
+		this.loaded = isLoaded;
+	}
+
+	public PlayerProfile(String playerName, UUID uuid, boolean isLoaded) {
+		this(playerName, uuid);
+		this.loaded = isLoaded;
+	}
+
+
+	public void save() {
+		if (!changed || !loaded) {
+			return;
+		}
+		MessageHandler.log("Saving PlayerProfile of player " + playerName + " ...");
+		PlayerProfile profileCopy = new PlayerProfile(playerName, uuid, found);
+		changed = !HeadHunter.db.saveUser(profileCopy);
+
+		if (changed) {
+			MessageHandler.log(ChatColor.RED + "PlayerProfile saving failed for player: " + ChatColor.WHITE + playerName
+					+ " , uuid: " + uuid);
+		}
+	}
+	
 	public String getPlayerName() {
 		return playerName;
 	}
 
+	
+	
 	public UUID getUuid() {
 		return uuid;
 	}
+	
 
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
@@ -69,6 +108,16 @@ public class PlayerProfile {
 	public void find(int id) {
 		found.put(id, true);
 		changed = true;
+	}
+	
+	public int getAmountFound() {
+		int amountFound = 0;
+		for(int i : found.keySet()) {
+			if(found.get(i)) {
+				amountFound ++;
+			}
+		}
+		return amountFound;
 	}
 	
 

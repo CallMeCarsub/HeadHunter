@@ -6,6 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import tv.tirco.headhunter.database.PlayerData;
+import tv.tirco.headhunter.database.UserManager;
 
 public class MessageHandler {
 
@@ -26,11 +28,27 @@ public class MessageHandler {
 		
 	}
 	
+	public static void debugs(String msg) {
+		if(Config.debug) {
+			Bukkit.getLogger().log(Level.INFO, msg);
+		}
+		
+	}
+	
 	public String translateTags(String s, Player p) {
+		String foundSkulls = "?";
+		if(!UserManager.hasPlayerDataKey(p)) {
+
+		} else {
+			PlayerData pData = UserManager.getPlayer(p);
+			foundSkulls = ""+pData.getAmountFound();
+		}
+		
+		
 		//<found>,<playername> 
 		s = ChatColor.translateAlternateColorCodes('&', s);
 		s = s.replace("<playername>", p.getName());
-		s = s.replace("<found>", "Temp: pData.getFoundSkulls");
+		s = s.replace("<found>", foundSkulls);
 		return translateTags(s);
 	}
 	
@@ -39,5 +57,12 @@ public class MessageHandler {
 		s = s.replace("<max>", "" + Heads.getInstance().getHeadAmount());
 		return s;
 	}
+
+	public static void log(String string) {
+		
+		
+	}
+
+
 
 }
