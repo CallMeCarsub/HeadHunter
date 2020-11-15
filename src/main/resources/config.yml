@@ -1,0 +1,41 @@
+version: ${version}
+##Should we display messages to console?
+debug: true
+
+##Should the heads emit particles? Not yet implemented.
+particles: true
+
+##What should the plugins prefix be?
+prefix: "&3[&bHeadHunter&3] "
+
+##What should we tell a player that is hunting for heads?
+##<found>, <max>, <playername>
+countmessage: "&aYou have found &6<found>&a out of &6<max>&a heads."
+
+##Should we announce to all players when a player has found all heads? 
+announcefindingall: true
+
+##What should we tell a player that is hunting for heads?
+##<found>, <max>, <playername>
+announcefindingallmessage: "&6<playername>&f has found all &c<max>&f heads!"
+
+##How often should we save the head data? (in minutes)
+autosave interval: 15
+
+##Should a players data be saved to file when they quit the server?
+saveonquit: true
+
+##How long ago should a player have logged in before we purge their data? (Days)
+purgeafter:90
+
+##Do you need the headhunter.basic permission to unlock heads?
+huntingrequiresperm: false
+
+##These are the heads that are stored. Please edit from ingame so values are correct.
+heads:
+    1:
+        x: 0
+        y: 0 
+        z: 0
+        world: default
+        hint: ""

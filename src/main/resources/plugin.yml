@@ -7,9 +7,19 @@ website: ${url}
 main: ${mainClass}
 
 commands:
-    example:
+    headhunter:
         description: An example command
-        permission: spigotplugin.example
+        permission: headhunter.basic
+        usage: /<command>
+    headhunteradming:
+        description: An example command
+        permission: headhunter.basic
         usage: /<command>
 
-permissions: {}
+permissions:
+    headhunter.basic:
+        description: "Allows you to count the heads you find, if enabled in config."
+        default: op
+    headhunter.admin:
+        description: "Allows you to edit heads, and savings."
+        default: op
