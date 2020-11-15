@@ -81,4 +81,17 @@ public class PlayerData {
 		return profile.getAmountFound();
 	}
 
+	
+	public void logout(boolean syncSave) {
+		Player thisPlayer = getPlayer();
+
+		if (syncSave) {
+			getProfile().save();
+		} else {
+			getProfile().scheduleAsyncSave();
+		}
+
+		UserManager.remove(thisPlayer);
+	}
+
 }

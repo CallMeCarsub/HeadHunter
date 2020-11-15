@@ -5,12 +5,16 @@ import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import tv.tirco.headhunter.HeadHunter;
+import tv.tirco.headhunter.database.PlayerData;
 import tv.tirco.headhunter.database.PlayerProfileLoadingTask;
+import tv.tirco.headhunter.database.UserManager;
 
-public class PlayerJoinListener {
+public class PlayerJoinListener implements Listener {
 
 	/**
 	 * Monitor PlayerJoinEvents.
@@ -28,15 +32,20 @@ public class PlayerJoinListener {
 		if (isNPCEntity(player)) {
 			return;
 		}
-		
-		//Location Check - In a dungeon.
-		//We do a backwards check as the playerdata isn't loaded yet.
 
-		new PlayerProfileLoadingTask(player).runTaskLaterAsynchronously(HeadHunter.plugin, 1); // 1 Tick delay to ensure
-																							// the player is marked as
-																							// online before we begin
-																							// loading
-		
+		new PlayerProfileLoadingTask(player).runTaskLaterAsynchronously(HeadHunter.plugin, 1);
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		Player player = event.getPlayer();
+
+		if (!UserManager.hasPlayerDataKey(player)) {
+			return;
+		}
+
+		PlayerData pData = UserManager.getPlayer(player);
+		pData.logout(false);
 	}
 	
     public static boolean isNPCEntity(Entity entity) {

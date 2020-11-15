@@ -23,6 +23,11 @@ public class PlayerProfile {
 		this.setUuid(uuid);
 		this.setFound(found);
 		this.setLoaded(true);
+		
+		//New user, no "found" file.
+		if(this.found == null) {
+			this.found = new HashMap<Integer,Boolean>();
+		}
 	}
 	
 		public PlayerProfile(String playerName) {
@@ -57,6 +62,10 @@ public class PlayerProfile {
 			MessageHandler.log(ChatColor.RED + "PlayerProfile saving failed for player: " + ChatColor.WHITE + playerName
 					+ " , uuid: " + uuid);
 		}
+	}
+	
+	public void scheduleAsyncSave() {
+		new PlayerProfileSaveTask(this).runTaskAsynchronously(HeadHunter.plugin);
 	}
 	
 	public String getPlayerName() {
@@ -99,7 +108,9 @@ public class PlayerProfile {
 	}
 	
 	public boolean hasFound(int id) {
-		if(found.containsKey(id)) {
+		if(found.isEmpty()) {
+			return false;
+		} else if(found.containsKey(id)) {
 			return found.get(id);
 		}
 		return false;

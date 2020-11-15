@@ -65,7 +65,7 @@ public class PlayerFileManager implements DatabaseManager {
 				String line;
 
 				while ((line = in.readLine()) != null) {
-					List<String> character = Arrays.asList(line.split(":"));
+					ArrayList<String> character = new ArrayList<String>(Arrays.asList(line.split(":")));
 					boolean powerless = false;
 					
 					//String lastSeen = character.get(2);
@@ -273,8 +273,8 @@ public class PlayerFileManager implements DatabaseManager {
 						writer.append(line).append("\r\n");
 					} else {
 						// otherwise write the new player information
-						writer.append(uuid != null ? uuid.toString() : "NULL").append(":"); // UUID - 0
-						writer.append(playerName).append(":"); // PlayerName - line 1
+						writer.append(playerName).append(":"); // PlayerName - line 0
+						writer.append(uuid != null ? uuid.toString() : "NULL").append(":"); // UUID - 1
 						writer.append(String.valueOf(System.currentTimeMillis() / TIME_CONVERSION_FACTOR))
 						.append(":"); // LastLogin - 2
 						
@@ -284,7 +284,7 @@ public class PlayerFileManager implements DatabaseManager {
 								writer.append(i+"=1").append(":"); // level - 2
 							}
 						}					
-						writer.append("break").append(":");
+						writer.append("BREAK").append(":");
 						writer.append("\r\n");
 					}
 
@@ -434,7 +434,7 @@ public class PlayerFileManager implements DatabaseManager {
 		}
 		String playerName = character[PLAYERNAME_POSITION];
 		
-		List<String> characterList = Arrays.asList(character);
+		ArrayList<String> characterList = new ArrayList<String>(Arrays.asList(character));
 		
 		//String lastSeen = character.get(2);
 		//String uuid = character.get(1);

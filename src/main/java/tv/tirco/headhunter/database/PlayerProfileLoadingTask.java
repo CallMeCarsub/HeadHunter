@@ -34,7 +34,7 @@ public class PlayerProfileLoadingTask extends BukkitRunnable {
 		attempt++;
 		//VoidRPG.VoidRPGPlugin.debug("Begin loading profile for player " + player.getName() + " attempt: " + attempt);
 
-		PlayerProfile profile = HeadHunter.db.loadPlayerProfile(player.getName(), player.getUniqueId(), false, true);
+		PlayerProfile profile = HeadHunter.db.loadPlayerProfile(player.getName(), player.getUniqueId(), true, true);
 		if (profile.isLoaded()) {
 			MessageHandler.debugs("Profile is loaded, applying...");
 			new ApplySuccessfulProfile(new PlayerData(player, profile)).runTask(HeadHunter.plugin);

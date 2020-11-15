@@ -11,6 +11,8 @@ import org.bukkit.inventory.EquipmentSlot;
 
 import tv.tirco.headhunter.Heads;
 import tv.tirco.headhunter.MessageHandler;
+import tv.tirco.headhunter.database.PlayerData;
+import tv.tirco.headhunter.database.UserManager;
 
 public class PlayerClickBlock implements Listener {
 	
@@ -29,13 +31,24 @@ public class PlayerClickBlock implements Listener {
 			return;
 		}
 		
+		if(!UserManager.hasPlayerDataKey(p)) {
+			return;
+		} 
+		PlayerData pData = UserManager.getPlayer(p);
+		
 		Location loc = event.getClickedBlock().getLocation(); 
 		//Is the block the player is clicking a loaded skull?
 		
 		if(Heads.getInstance().isHead(loc)) {
 			int headID = Heads.getInstance().getHeadId(loc);
-			int maxHeads = Heads.getInstance().getHeadAmount();
+			//int maxHeads = Heads.getInstance().getHeadAmount();
 			//TODO save to player
+			if(pData.hasFound(headID)) {
+				p.sendMessage("You have already found this Skull.");
+				return;
+			}
+			
+			pData.find(headID);
 			
 			//TODO notify to player if new.
 			String s = "&aYou have found &6<found>&a out of &6<max>&a heads.";

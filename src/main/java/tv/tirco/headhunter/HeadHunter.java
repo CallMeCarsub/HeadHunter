@@ -6,14 +6,16 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import tv.tirco.headhunter.database.DatabaseManager;
+import tv.tirco.headhunter.database.DatabaseManagerFactory;
 import tv.tirco.headhunter.listeners.PlayerClickBlock;
+import tv.tirco.headhunter.listeners.PlayerJoinListener;
 import tv.tirco.headhunter.listeners.PlayerPlaceHead;
 
 
 public class HeadHunter extends JavaPlugin {
 	
 	public static Plugin plugin;
-	public static String playerDataKey;
+	public final static String playerDataKey = "HeadHunter: Tracked";
 	public static DatabaseManager db;
 	
 
@@ -25,6 +27,7 @@ public class HeadHunter extends JavaPlugin {
 
     @Override
     public void onEnable() {
+    	plugin = this;
         // Don't log enabling, Spigot does that for you automatically!
     	setupFilePaths();
 
@@ -35,11 +38,14 @@ public class HeadHunter extends JavaPlugin {
         setupInstances();
         
         loadConfig();
+        
+        db = DatabaseManagerFactory.getDatabaseManager();
     }
 
 	private void registerListeners() {
 		getServer().getPluginManager().registerEvents(new PlayerPlaceHead(), this);
 		getServer().getPluginManager().registerEvents(new PlayerClickBlock(), this);
+		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
 		
 	}
 
