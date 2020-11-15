@@ -32,6 +32,7 @@ purgeafter:90
 huntingrequiresperm: false
 
 ##These are the heads that are stored. Please edit from ingame so values are correct.
+##Is saved under heads.yml, this is just an explanation
 heads:
     1:
         x: 0
