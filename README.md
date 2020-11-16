@@ -5,8 +5,8 @@
 * /hh top -- Shows the leaderboard.
 
 # * /headhunteradmin or /hha
-* /hha find <id> -- Gives you the coords and a clickable button to TP to it.
-* /hha delete <id> -- 
+* /hha find (id) -- Gives you the coords and a clickable button to TP to it.
+* /hha delete (id) -- 
 * /hha add on/off. toggles addingmode. Skulls placed will automatically be added to the list.
 * /hha debug -- Toggles debuging (Until reboot)
 * /hha notifyadmins -- Toggles debugmessages being sendt to admings. (Until reboot)
