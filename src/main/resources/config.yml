@@ -1,37 +1,53 @@
 version: ${version}
+
+
+###########
+##Options##
+###########
+setting:
 ##Should we display messages to console?
-debug: true
+    debug: true
+    
+##Announce debugs to admins? headhunter.admin permission node.
+    debugtoadmins: true
 
 ##Should the heads emit particles? Not yet implemented.
-particles: true
+    particles: true
 
 ##What should the plugins prefix be?
-prefix: "&3[&bHeadHunter&3] "
-
-##What should we tell a player that is hunting for heads?
-##<found>, <max>, <playername>
-countmessage: "&aYou have found &6<found>&a out of &6<max>&a heads."
+    prefix: "&3[&bHeadHunter&3] "
 
 ##Should we announce to all players when a player has found all heads? 
-announcefindingall: true
+    announcefindingall: true
+
+##How often should we save the head data? (in minutes)
+##Heads are also saved when a player leaves the server.
+##Only players that have found any heads are saved.
+    autosave interval: 15
+
+##How long ago should a player have logged in before we purge their data? (Months)
+##0 = never purge.
+    purgeafter:3
+
+##Do you need the headhunter.basic permission to unlock heads?
+    huntingrequiresperm: false
+
+############
+##Messages##
+############
+messages:
+##How should we announce a player that has found all skulls?
+##Announcefindingall must be set to true.
+##<found>, <max>, <playername>
+    announcefindingallmessage: "&6<playername>&f has found all &c<max>&f heads!"
 
 ##What should we tell a player that is hunting for heads?
 ##<found>, <max>, <playername>
-announcefindingallmessage: "&6<playername>&f has found all &c<max>&f heads!"
+    countmessage: "&aYou have found &6<found>&a out of &6<max>&a heads."
 
-##How often should we save the head data? (in minutes)
-autosave interval: 15
-
-##Should a players data be saved to file when they quit the server?
-saveonquit: true
-
-##How long ago should a player have logged in before we purge their data? (Days)
-purgeafter:90
-
-##Do you need the headhunter.basic permission to unlock heads?
-huntingrequiresperm: false
 
 ##These are the heads that are stored. Please edit from ingame so values are correct.
+##Is saved under heads.yml, this is just an explanation
 heads:
     1:
         x: 0
