@@ -86,12 +86,12 @@ public class PlayerProfile {
 			return;
 		}
 		
-		MessageHandler.log("Saving PlayerProfile of player " + playerName + " ...");
+		MessageHandler.getInstance().log("Saving PlayerProfile of player " + playerName + " ...");
 		PlayerProfile profileCopy = new PlayerProfile(playerName, uuid, found, foundAmount);
 		changed = !HeadHunter.db.saveUser(profileCopy);
 
 		if (changed) {
-			MessageHandler.log(ChatColor.RED + "PlayerProfile saving failed for player: " + ChatColor.WHITE + playerName
+			MessageHandler.getInstance().log(ChatColor.RED + "PlayerProfile saving failed for player: " + ChatColor.WHITE + playerName
 					+ " , uuid: " + uuid);
 		}
 	}

@@ -19,7 +19,7 @@ public enum DatabaseType {
 		}
 
 		// Default to Flatfile
-		MessageHandler.log("Unable to identify storage type \" " + typeName + "\" - Defaulting to flatfile.");
+		MessageHandler.getInstance().log("Unable to identify storage type \" " + typeName + "\" - Defaulting to flatfile.");
 		return FLATFILE;
 	}
 }

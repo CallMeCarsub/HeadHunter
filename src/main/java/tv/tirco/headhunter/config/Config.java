@@ -3,9 +3,6 @@ package tv.tirco.headhunter.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-
 import tv.tirco.headhunter.MessageHandler;
 
 public class Config extends AutoUpdateConfigLoader {
@@ -86,5 +83,26 @@ public class Config extends AutoUpdateConfigLoader {
 
 	public int getOldUsersCutoff() {
 		return config.getInt("Database_Purging.Old_User_Cutoff", 6);
+	}
+	
+	public boolean getAnnounceFindAll() {
+		return config.getBoolean("setting.announcefindingall", true);
+	}
+	
+	/* MESSAGES */
+	public String getMessagePrefix() {
+		return config.getString("messages.prefix", "&3[&bHeadHunter&3]");
+	}
+	
+	public String getMessageAnnounceFindAll() {
+		return config.getString("messages.announcefindingallmessage:", "&6<playername>&f has found all &c<max>&f heads!");
+	}
+	
+	public String getMessageCount() {
+		return config.getString("messages.countmessage", "&aYou have found &6<found>&a out of &6<max>&a heads.");
+	}
+	
+	public String getMessageAlreadyFound() {
+		return config.getString("messages.repeatmessage", "&aYou have already found this skull.");
 	}
 }

@@ -9,13 +9,11 @@ setting:
     debug: true
     
 ##Announce debugs to admins? headhunter.admin permission node.
+##Can be turned on temporarily with the /headhunteradmin debug command
     debugtoadmins: true
 
 ##Should the heads emit particles? Not yet implemented.
     particles: true
-
-##What should the plugins prefix be?
-    prefix: "&3[&bHeadHunter&3] "
 
 ##Should we announce to all players when a player has found all heads? 
     announcefindingall: true
@@ -36,6 +34,8 @@ setting:
 ##Messages##
 ############
 messages:
+##What should the plugins prefix be?
+    prefix: "&3[&bHeadHunter&3] "
 ##How should we announce a player that has found all skulls?
 ##Announcefindingall must be set to true.
 ##<found>, <max>, <playername>

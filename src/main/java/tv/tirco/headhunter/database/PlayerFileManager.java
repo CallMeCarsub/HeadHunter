@@ -53,7 +53,7 @@ public class PlayerFileManager implements DatabaseManager {
 		//Should never be used? - Powerless users are not saved.
 		int purgedUsers = 0;
 
-		MessageHandler.log("Purging powerless users...");
+		MessageHandler.getInstance().log("Purging powerless users...");
 
 		BufferedReader in = null;
 		FileWriter out = null;
@@ -120,7 +120,7 @@ public class PlayerFileManager implements DatabaseManager {
 			}
 		}
 
-		MessageHandler.log("Purged " + purgedUsers + " users from the database.");
+		MessageHandler.getInstance().log("Purged " + purgedUsers + " users from the database.");
 
 	}
 
@@ -129,7 +129,7 @@ public class PlayerFileManager implements DatabaseManager {
 		int removedPlayers = 0;
 		long currentTime = System.currentTimeMillis();
 
-		MessageHandler.log("Purging old users...");
+		MessageHandler.getInstance().log("Purging old users...");
 
 		BufferedReader in = null;
 		FileWriter out = null;
@@ -175,7 +175,7 @@ public class PlayerFileManager implements DatabaseManager {
 				out = new FileWriter(usersFilePath);
 				out.write(writer.toString());
 			} catch (IOException e) {
-				MessageHandler.log("Exception while reading " + usersFilePath + " (Are you sure you formatted it correctly?)"
+				MessageHandler.getInstance().log("Exception while reading " + usersFilePath + " (Are you sure you formatted it correctly?)"
 						+ e.toString());
 			} finally {
 				if (in != null) {
@@ -195,7 +195,7 @@ public class PlayerFileManager implements DatabaseManager {
 			}
 		}
 
-		MessageHandler.log("Purged " + removedPlayers + " users from the database.");
+		MessageHandler.getInstance().log("Purged " + removedPlayers + " users from the database.");
 	}
 
 	public boolean removeUser(String playerName) {
@@ -226,7 +226,7 @@ public class PlayerFileManager implements DatabaseManager {
 				out = new FileWriter(usersFilePath); // Write out the new file
 				out.write(writer.toString());
 			} catch (Exception e) {
-				MessageHandler.log("Exception while reading " + usersFilePath + " (Are you sure you formatted it correctly?)"
+				MessageHandler.getInstance().log("Exception while reading " + usersFilePath + " (Are you sure you formatted it correctly?)"
 						+ e.toString());
 			} finally {
 				if (in != null) {
@@ -386,7 +386,7 @@ public class PlayerFileManager implements DatabaseManager {
 
 					// Update playerName in database after name change
 					if (!character[PLAYERNAME_POSITION].equalsIgnoreCase(playerName)) {
-						MessageHandler.log("Name change detected: " + character[PLAYERNAME_POSITION] + " => " + playerName);
+						MessageHandler.getInstance().log("Name change detected: " + character[PLAYERNAME_POSITION] + " => " + playerName);
 						character[PLAYERNAME_POSITION] = playerName;
 					}
 

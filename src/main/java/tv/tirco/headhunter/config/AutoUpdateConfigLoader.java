@@ -120,7 +120,7 @@ public abstract class AutoUpdateConfigLoader extends ConfigLoader {
 				String saveName = fileName;
 				// At this stage we cannot guarantee that Config has been loaded, so we do the
 				// check directly here
-				if (!plugin.getConfig().getBoolean("General.Config_Update_Overwrite", true)) {
+				if (!plugin.getConfig().getBoolean("setting.updateoverwrite", true)) {
 					saveName += ".new";
 				}
 
