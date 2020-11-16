@@ -12,10 +12,14 @@ import tv.tirco.headhunter.database.UserManager;
 public class MessageHandler {
 
 	private static MessageHandler instance;
-	public String prefix = "&3[&bHeadHunter&3]";
+	public String prefix = "HeadHunter";
 	
-	private static boolean debug = false;
-	private static boolean debugToAdmins = false;
+	private boolean debug = false;
+	private boolean debugToAdmins = false;
+	
+	public void updatePrefix(String prefix) {
+		this.prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+	}
 	
 	public static MessageHandler getInstance() {
 		if (instance == null) {
@@ -24,19 +28,22 @@ public class MessageHandler {
 		return instance;
 	}
 	
+	/*
+	 * Debug messages are only sendt if enabled in config.
+	 */
 	public void debug(String msg) {
 		if(debug) {
-			Bukkit.getLogger().log(Level.INFO, msg);
+			Bukkit.getLogger().log(Level.INFO, prefix + msg);
+		}
+		if(debugToAdmins) {
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				if(p.hasPermission("headhunter.admin")) {
+					p.sendMessage(prefix + msg);
+				}
+			}
 		}
 		
 	}
-	
-	/*public static void debugs(String msg) {
-		if(debug) {
-			Bukkit.getLogger().log(Level.INFO, msg);
-		}
-		
-	}*/
 	
 	public String translateTags(String s, Player p) {
 		String foundSkulls = "?";
@@ -61,9 +68,11 @@ public class MessageHandler {
 		return s;
 	}
 
-	public static void log(String string) {
-		
-		
+	/*
+	 * Log messages are always sendt to console.
+	 */
+	public void log(String msg) {
+		Bukkit.getLogger().log(Level.INFO, prefix + msg);
 	}
 
 	

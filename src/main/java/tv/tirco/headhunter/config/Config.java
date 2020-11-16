@@ -3,9 +3,6 @@ package tv.tirco.headhunter.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-
 import tv.tirco.headhunter.MessageHandler;
 
 public class Config extends AutoUpdateConfigLoader {
@@ -39,12 +36,8 @@ public class Config extends AutoUpdateConfigLoader {
 			MessageHandler.getInstance().debug("Debugging has been enabled.");
 		}
 
-		/* General Settings */
-		if (getSaveInterval() <= 0) {
-			reason.add("General.Save_Interval should be greater than 0!");
-		}
-
 		// If the reason list is empty, keys are valid.
+			MessageHandler.getInstance().updatePrefix(getMessagePrefix());
 		return noErrorsInConfig(reason);
 	}
 
@@ -76,15 +69,41 @@ public class Config extends AutoUpdateConfigLoader {
 	}
 
 	public int getSaveInterval() {
-		return config.getInt("General.Save_Interval", 15);
+		return config.getInt("setting.autosaveinterval", 15);
+	}
+	
+	public boolean getUseParticles() {
+		return config.getBoolean("setting.particles", true);
 	}
 
 	/* Database Purging */
-	public int getPurgeInterval() {
-		return config.getInt("Database_Purging.Purge_Interval", -1);
+	public int getOldUsersCutoff() { //How long in months we should wait before we remove a user.
+		return config.getInt("setting.purgeafter", 6);
+	}
+	
+	public boolean getAnnounceFindAll() {
+		return config.getBoolean("setting.announcefindingall", true);
+	}
+	
+	/* MESSAGES */
+	public String getMessagePrefix() {
+		return config.getString("messages.prefix", "&3[&bHeadHunter&3] ");
+	}
+	
+	public String getMessageAnnounceFindAll() {
+		return config.getString("messages.announcefindingallmessage:", "&6<playername>&f has found all &c<max>&f heads!");
+	}
+	
+	public String getMessageCount() {
+		return config.getString("messages.countmessage", "&aYou have found &6<found>&a out of &6<max>&a heads.");
+	}
+	
+	public String getMessageAlreadyFound() {
+		return config.getString("messages.repeatmessage", "&aYou have already found this skull.");
 	}
 
-	public int getOldUsersCutoff() {
-		return config.getInt("Database_Purging.Old_User_Cutoff", 6);
+	
+	public boolean getNeedPermToHunt() {
+		return config.getBoolean("setting.huntingrequiresperm",false);
 	}
 }

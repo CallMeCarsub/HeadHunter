@@ -20,7 +20,7 @@ public class PlayerProfileLoadingTask extends BukkitRunnable {
 		this.attempt = attempt;
 	}
 
-	// ASYNC TASK|
+	// ASYNC TASK
 	// DO NOT MODIFY PlayerData FROM HERE!!!
 	@Override
 	public void run() {
@@ -42,11 +42,7 @@ public class PlayerProfileLoadingTask extends BukkitRunnable {
 		}
 		// failed max times.
 		if (attempt >= MAX_TRIES) {
-			MessageHandler.log("Giving up on attempting to load the PlayerProfile for " + player.getName());
-			//player.sendMessage("Failed to load your RecklessRPG profile - Please contact an administrator.");
-			/*player.kickPlayer(ChatColor.RED + "Failed to load your HeadHunter-Profile! \n" + ChatColor.WHITE
-					+ "Please try again later...\n\n" + ChatColor.YELLOW
-					+ "If the problem percists, contact an administrator."); */
+			MessageHandler.getInstance().log("Giving up on attempting to load the PlayerProfile for " + player.getName());
 
 			return;
 		}

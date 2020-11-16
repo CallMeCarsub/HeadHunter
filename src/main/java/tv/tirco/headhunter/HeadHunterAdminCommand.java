@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import tv.tirco.headhunter.database.PlayerData;
 import tv.tirco.headhunter.database.UserManager;
 
-public class HeadHunterCommand implements CommandExecutor {
+public class HeadHunterAdminCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

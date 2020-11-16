@@ -7,10 +7,13 @@ import org.bukkit.World;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import tv.tirco.headhunter.database.HeadFileManager;
+
 public class Heads {
 	
 	private static Heads instance;
 	private boolean changed;
+	private int nextID;
 	
 	public static Heads getInstance() {
 		if (instance == null) {
@@ -23,6 +26,17 @@ public class Heads {
 	public Heads() {
 		heads = HashBiMap.create();
 		this.setChanged(false);
+		this.nextID = 0;
+	}
+	
+	public void loadFromFile() {
+		HeadFileManager.loadHeads();
+	}
+	
+	public void saveHeads() {
+		if(changed) {
+			HeadFileManager.saveHeads();
+		}
 	}
 	
 	private HashBiMap<Integer, Location> heads;
@@ -31,7 +45,9 @@ public class Heads {
 		if(heads.containsValue(loc)) {
 			return false;
 		} else {
-			heads.put(heads.size(), loc);
+			heads.put(nextID, loc);
+			changed = true;
+			this.nextID +=1;
 			return true;
 		}
 	}
@@ -41,9 +57,11 @@ public class Heads {
 		if(!fromConfig) {
 			this.setChanged(true);
 		}
+		if(id >= nextID) {
+			nextID = id +1;
+		}
 		return true; 
 	}
-
 	
 	public Location getLocFromValues(double x, double y, double z, String worldname) {
 		World world = Bukkit.getWorld(worldname);
@@ -61,11 +79,10 @@ public class Heads {
 		return loc;
 	}
 	
-	public void addHead(int id, Location loc) {
-		
-	}
-	
 	public Location getLocFromHeadId(int id) {
+		if(heads.containsKey(id)) {
+			return heads.get(id);
+		}
 		return null;
 	}
 
@@ -97,5 +114,9 @@ public class Heads {
 
 	public int getHeadAmount() {
 		return heads.size();
+	}
+	
+	public boolean headExists(Integer i) {
+		return heads.containsKey(i);
 	}
 }

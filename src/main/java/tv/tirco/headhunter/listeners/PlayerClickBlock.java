@@ -1,6 +1,8 @@
 package tv.tirco.headhunter.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -11,6 +13,7 @@ import org.bukkit.inventory.EquipmentSlot;
 
 import tv.tirco.headhunter.Heads;
 import tv.tirco.headhunter.MessageHandler;
+import tv.tirco.headhunter.config.Config;
 import tv.tirco.headhunter.database.PlayerData;
 import tv.tirco.headhunter.database.UserManager;
 
@@ -34,6 +37,12 @@ public class PlayerClickBlock implements Listener {
 		if(!UserManager.hasPlayerDataKey(p)) {
 			return;
 		} 
+		
+		//Perm check
+		if(Config.getInstance().getNeedPermToHunt() && !p.hasPermission("headhunter.basic")) {
+			return;
+		}
+		
 		PlayerData pData = UserManager.getPlayer(p);
 		
 		Location loc = event.getClickedBlock().getLocation(); 
@@ -41,19 +50,39 @@ public class PlayerClickBlock implements Listener {
 		
 		if(Heads.getInstance().isHead(loc)) {
 			int headID = Heads.getInstance().getHeadId(loc);
-			//int maxHeads = Heads.getInstance().getHeadAmount();
-			//TODO save to player
 			if(pData.hasFound(headID)) {
-				p.sendMessage("You have already found this Skull.");
+				//Send Already Found Message.
+				String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageAlreadyFound(), p);
+				p.sendMessage(s);
 				return;
 			}
 			
 			pData.find(headID);
+			//Send Counting Message
+			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCount(), p);
+			p.sendMessage(s);
+			p.playSound(loc, Sound.BLOCK_BEACON_POWER_SELECT, 1f, 2f);
 			
-			//TODO notify to player if new.
-			String s = "&aYou have found &6<found>&a out of &6<max>&a heads.";
+			//Player has found all!
+			if(pData.getAmountFound() >= Heads.getInstance().getHeadAmount()) {
+				String announce = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageAnnounceFindAll(), p);
+				if(Config.getInstance().getAnnounceFindAll()) {
+					//Send to all players.
+					for(Player player : Bukkit.getOnlinePlayers()) {
+						player.sendMessage(announce);
+						player.playSound(player.getLocation(), Sound.AMBIENT_BASALT_DELTAS_MOOD, 2, 2);
+					}
+					
+				} else {
+					//Only send to finding player
+					p.sendMessage(announce);
+				}
+				p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 2, 2);
+			}
 			
-			p.sendMessage(MessageHandler.getInstance().translateTags(s, p));
+			//minecraft:block.beacon.power_select Pitch 2
+			//ambient.basalt_deltas.mood -> Big Thud. Pitch 2 & 0.1
+			//minecraft:ui.toast.challenge_complete. Pitch 2
 			
 		} else {
 			return;
