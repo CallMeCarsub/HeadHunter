@@ -1,10 +1,10 @@
 ## Commands
-* /headhunter or /hh
+# * /headhunter or /hh
 * /hh list  -- Shows a list of all heads you have found, + allows you to hover them for hints.
 * /hh count -- Shows the amount of heads you have found.
 * /hh top -- Shows the leaderboard.
 
-* /headhunteradmin or /hha
+# * /headhunteradmin or /hha
 * /hha find <id> -- Gives you the coords and a clickable button to TP to it.
 * /hha delete <id> -- 
 * /hha add on/off. toggles addingmode. Skulls placed will automatically be added to the list.
