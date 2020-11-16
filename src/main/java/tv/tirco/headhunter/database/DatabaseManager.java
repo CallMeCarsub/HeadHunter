@@ -3,10 +3,12 @@ package tv.tirco.headhunter.database;
 import java.util.List;
 import java.util.UUID;
 
+import tv.tirco.headhunter.config.Config;
+
 public interface DatabaseManager {
 	
-	// one month in milliseconds TODO config.
-	public final long PURGE_TIME = 2630000000L * 3;
+	// one month in milliseconds.
+	public final long PURGE_TIME = 2630000000L * Config.getInstance().getOldUsersCutoff();
 
 	/**
 	 * Purge users with a level of 0 from the database.

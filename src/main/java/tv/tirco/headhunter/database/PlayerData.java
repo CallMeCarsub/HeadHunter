@@ -36,7 +36,6 @@ public class PlayerData {
 		profile.save();
 	}
 	
-
 	public Player getPlayer() {
 		return player;
 	}

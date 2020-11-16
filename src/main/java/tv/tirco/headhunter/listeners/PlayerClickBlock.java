@@ -37,6 +37,12 @@ public class PlayerClickBlock implements Listener {
 		if(!UserManager.hasPlayerDataKey(p)) {
 			return;
 		} 
+		
+		//Perm check
+		if(Config.getInstance().getNeedPermToHunt() && !p.hasPermission("headhunter.basic")) {
+			return;
+		}
+		
 		PlayerData pData = UserManager.getPlayer(p);
 		
 		Location loc = event.getClickedBlock().getLocation(); 

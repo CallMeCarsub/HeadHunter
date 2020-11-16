@@ -1,12 +1,12 @@
-version: ${version}
-
-
 ###########
 ##Options##
 ###########
 setting:
 ##Should we display messages to console?
     debug: true
+
+##Should we overwrite this config if there's an update to it?
+    update_overwrite: true
     
 ##Announce debugs to admins? headhunter.admin permission node.
 ##Can be turned on temporarily with the /headhunteradmin debug command
@@ -21,11 +21,11 @@ setting:
 ##How often should we save the head data? (in minutes)
 ##Heads are also saved when a player leaves the server.
 ##Only players that have found any heads are saved.
-    autosave interval: 15
+    autosaveinterval: 15
 
 ##How long ago should a player have logged in before we purge their data? (Months)
 ##0 = never purge.
-    purgeafter:3
+    purgeafter: 3
 
 ##Do you need the headhunter.basic permission to unlock heads?
     huntingrequiresperm: false
@@ -44,6 +44,10 @@ messages:
 ##What should we tell a player that is hunting for heads?
 ##<found>, <max>, <playername>
     countmessage: "&aYou have found &6<found>&a out of &6<max>&a heads."
+    
+##What should we tell a player that already found a head?
+##<found>, <max>, <playername>
+    repeatmessage: "&aYou have already found this head."
 
 
 ##These are the heads that are stored. Please edit from ingame so values are correct.

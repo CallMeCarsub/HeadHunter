@@ -6,17 +6,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
-import tv.tirco.headhunter.config.Config;
 import tv.tirco.headhunter.database.PlayerData;
 import tv.tirco.headhunter.database.UserManager;
 
 public class MessageHandler {
 
 	private static MessageHandler instance;
-	public String prefix = ChatColor.translateAlternateColorCodes('&', Config.getInstance().getMessagePrefix());
+	public String prefix = "HeadHunter";
 	
 	private boolean debug = false;
 	private boolean debugToAdmins = false;
+	
+	public void updatePrefix(String prefix) {
+		this.prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+	}
 	
 	public static MessageHandler getInstance() {
 		if (instance == null) {
@@ -25,6 +28,9 @@ public class MessageHandler {
 		return instance;
 	}
 	
+	/*
+	 * Debug messages are only sendt if enabled in config.
+	 */
 	public void debug(String msg) {
 		if(debug) {
 			Bukkit.getLogger().log(Level.INFO, prefix + msg);
@@ -62,6 +68,9 @@ public class MessageHandler {
 		return s;
 	}
 
+	/*
+	 * Log messages are always sendt to console.
+	 */
 	public void log(String msg) {
 		Bukkit.getLogger().log(Level.INFO, prefix + msg);
 	}

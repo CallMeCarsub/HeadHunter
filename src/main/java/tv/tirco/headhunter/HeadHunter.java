@@ -12,6 +12,8 @@ import com.google.common.base.Charsets;
 import tv.tirco.headhunter.config.Config;
 import tv.tirco.headhunter.database.DatabaseManager;
 import tv.tirco.headhunter.database.DatabaseManagerFactory;
+import tv.tirco.headhunter.database.SaveTimerTask;
+import tv.tirco.headhunter.listeners.PlayerBreakBlock;
 import tv.tirco.headhunter.listeners.PlayerClickBlock;
 import tv.tirco.headhunter.listeners.PlayerJoinListener;
 import tv.tirco.headhunter.listeners.PlayerPlaceHead;
@@ -48,18 +50,34 @@ public class HeadHunter extends JavaPlugin {
 
         
         db = DatabaseManagerFactory.getDatabaseManager();
+        
+        scheduleTasks();
     }
+
+	private void scheduleTasks() {
+		if(Config.getInstance().getUseParticles()) {
+			new ParticleRunnable().runTaskTimer(this, 60, 60);
+		}
+		
+		long saveInterval = Config.getInstance().getSaveInterval();
+		if(saveInterval != 0) {
+			long saveIntervalTicks = saveInterval * 1200; //1200 = 1 minute
+			new SaveTimerTask().runTaskTimer(this, saveIntervalTicks, saveIntervalTicks);
+		}
+
+	}
 
 	private void registerListeners() {
 		getServer().getPluginManager().registerEvents(new PlayerPlaceHead(), this);
 		getServer().getPluginManager().registerEvents(new PlayerClickBlock(), this);
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerBreakBlock(), this);
 		
 	}
 
 	private void setupInstances() {
 		MessageHandler.getInstance();
-		Heads.getInstance();
+		Heads.getInstance().loadFromFile();
 	}
 	
 	private void loadConfig() {
@@ -102,4 +120,6 @@ public class HeadHunter extends JavaPlugin {
 		InputStream in = getResource(fileName);
 		return in == null ? null : new InputStreamReader(in, Charsets.UTF_8);
 	}
+	
+	
 }

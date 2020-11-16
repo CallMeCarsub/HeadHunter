@@ -275,21 +275,25 @@ public class PlayerFileManager implements DatabaseManager {
 							&& !character[PLAYERNAME_POSITION].equalsIgnoreCase(playerName)) {
 						writer.append(line).append("\r\n");
 					} else {
-						// otherwise write the new player information
-						writer.append(playerName).append(":"); // PlayerName - line 0
-						writer.append(uuid != null ? uuid.toString() : "NULL").append(":"); // UUID - 1
-						writer.append(String.valueOf(System.currentTimeMillis() / TIME_CONVERSION_FACTOR))
-						.append(":"); // LastLogin - 2
-						writer.append(amountFound).append(":");//AMOUNT_FOUND_POSITION - 3
+						//Check if player is powerless. If it is, we skip.
+						if(!(profile.getAmountFound() < 1)) {
+							// otherwise write the new player information
+							writer.append(playerName).append(":"); // PlayerName - line 0
+							writer.append(uuid != null ? uuid.toString() : "NULL").append(":"); // UUID - 1
+							writer.append(String.valueOf(System.currentTimeMillis() / TIME_CONVERSION_FACTOR))
+							.append(":"); // LastLogin - 2
+							writer.append(amountFound).append(":");//AMOUNT_FOUND_POSITION - 3
+							
+							//Loop through all possible skulls and save the ones that are true.
+							for(int i : profile.getFound().keySet()) {
+								if(profile.getFound().get(i)) {
+									writer.append(i+"=1").append(":");
+								}
+							}					
+							writer.append("BREAK").append(":");
+							writer.append("\r\n");
+						}
 						
-						//Loop through all possible skulls and save the ones that are true.
-						for(int i : profile.getFound().keySet()) {
-							if(profile.getFound().get(i)) {
-								writer.append(i+"=1").append(":");
-							}
-						}					
-						writer.append("BREAK").append(":");
-						writer.append("\r\n");
 					}
 
 				}
@@ -335,6 +339,7 @@ public class PlayerFileManager implements DatabaseManager {
 				out.append("0:"); //AMOUNT_FOUND_POSITION 3
 				out.append("0=0:");//Unlocked 4 - ?
 				out.append("BREAK:"); // unspent level points - Final
+				out.append("\r\n");
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {

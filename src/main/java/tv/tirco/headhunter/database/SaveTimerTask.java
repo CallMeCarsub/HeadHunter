@@ -3,6 +3,7 @@ package tv.tirco.headhunter.database;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import tv.tirco.headhunter.HeadHunter;
+import tv.tirco.headhunter.Heads;
 import tv.tirco.headhunter.MessageHandler;
 
 
@@ -19,5 +20,7 @@ public class SaveTimerTask extends BukkitRunnable {
 		if (count > 1) {
 			MessageHandler.getInstance().debug("AutoSave - Saved " + (count - 1) + " players");
 		}
+		
+		Heads.getInstance().saveHeads();
 	}
 }

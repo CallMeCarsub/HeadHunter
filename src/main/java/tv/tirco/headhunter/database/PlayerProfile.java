@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
 import tv.tirco.headhunter.HeadHunter;
+import tv.tirco.headhunter.Heads;
 import tv.tirco.headhunter.MessageHandler;
 
 public class PlayerProfile {
@@ -77,14 +78,14 @@ public class PlayerProfile {
 
 
 	public void save() {
-		if (!changed || !loaded) {
+		if ((!changed && (foundAmount > 0)) || !loaded) {
 			return;
 		}
 		
-		//Do not save the user if they haven't found any skulls!
-		if(getAmountFound() < 1) {
-			return;
-		}
+//		//Do not save the user if they haven't found any skulls!
+//		if(getAmountFound() < 1) {
+//			return;
+//		}
 		
 		MessageHandler.getInstance().log("Saving PlayerProfile of player " + playerName + " ...");
 		PlayerProfile profileCopy = new PlayerProfile(playerName, uuid, found, foundAmount);
@@ -96,6 +97,18 @@ public class PlayerProfile {
 		}
 	}
 	
+	public void validateHeads() {
+		//Fixes deleted heads.
+		HashMap<Integer,Boolean> validatedList = new HashMap<Integer,Boolean>();
+		for(Integer i : found.keySet()) {
+			if(Heads.getInstance().headExists(i)) {
+				validatedList.put(i, found.get(i));
+			}
+		}
+		found = validatedList;
+		getAmountFound();
+	}
+	
 	public void scheduleAsyncSave() {
 		new PlayerProfileSaveTask(this).runTaskAsynchronously(HeadHunter.plugin);
 	}
@@ -103,14 +116,11 @@ public class PlayerProfile {
 	public String getPlayerName() {
 		return playerName;
 	}
-
-	
 	
 	public UUID getUuid() {
 		return uuid;
 	}
 	
-
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
 	}

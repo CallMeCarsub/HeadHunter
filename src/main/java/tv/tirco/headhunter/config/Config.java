@@ -36,12 +36,8 @@ public class Config extends AutoUpdateConfigLoader {
 			MessageHandler.getInstance().debug("Debugging has been enabled.");
 		}
 
-		/* General Settings */
-		if (getSaveInterval() <= 0) {
-			reason.add("General.Save_Interval should be greater than 0!");
-		}
-
 		// If the reason list is empty, keys are valid.
+			MessageHandler.getInstance().updatePrefix(getMessagePrefix());
 		return noErrorsInConfig(reason);
 	}
 
@@ -73,16 +69,16 @@ public class Config extends AutoUpdateConfigLoader {
 	}
 
 	public int getSaveInterval() {
-		return config.getInt("General.Save_Interval", 15);
+		return config.getInt("setting.autosaveinterval", 15);
+	}
+	
+	public boolean getUseParticles() {
+		return config.getBoolean("setting.particles", true);
 	}
 
 	/* Database Purging */
-	public int getPurgeInterval() {
-		return config.getInt("Database_Purging.Purge_Interval", -1);
-	}
-
-	public int getOldUsersCutoff() {
-		return config.getInt("Database_Purging.Old_User_Cutoff", 6);
+	public int getOldUsersCutoff() { //How long in months we should wait before we remove a user.
+		return config.getInt("setting.purgeafter", 6);
 	}
 	
 	public boolean getAnnounceFindAll() {
@@ -91,7 +87,7 @@ public class Config extends AutoUpdateConfigLoader {
 	
 	/* MESSAGES */
 	public String getMessagePrefix() {
-		return config.getString("messages.prefix", "&3[&bHeadHunter&3]");
+		return config.getString("messages.prefix", "&3[&bHeadHunter&3] ");
 	}
 	
 	public String getMessageAnnounceFindAll() {
@@ -104,5 +100,10 @@ public class Config extends AutoUpdateConfigLoader {
 	
 	public String getMessageAlreadyFound() {
 		return config.getString("messages.repeatmessage", "&aYou have already found this skull.");
+	}
+
+	
+	public boolean getNeedPermToHunt() {
+		return config.getBoolean("setting.huntingrequiresperm",false);
 	}
 }
