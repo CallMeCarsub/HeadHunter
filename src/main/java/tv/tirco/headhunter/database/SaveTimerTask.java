@@ -17,7 +17,7 @@ public class SaveTimerTask extends BukkitRunnable {
 			count++;
 		}
 		if (count > 1) {
-			MessageHandler.log("AutoSave - Saved " + (count - 1) + " players");
+			MessageHandler.getInstance().debug("AutoSave - Saved " + (count - 1) + " players");
 		}
 	}
 }

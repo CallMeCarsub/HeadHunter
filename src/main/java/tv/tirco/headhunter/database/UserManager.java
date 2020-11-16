@@ -91,7 +91,7 @@ public class UserManager {
 
 		if (player == null) {
 			if (!offlineValid) {
-				MessageHandler.debugs("A valid PlayerData object could not be found for " + playerName + ".");
+				MessageHandler.getInstance().debug("A valid PlayerData object could not be found for " + playerName + ".");
 			}
 
 			return null;

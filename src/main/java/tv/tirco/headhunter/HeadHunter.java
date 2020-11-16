@@ -1,9 +1,13 @@
 package tv.tirco.headhunter;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.google.common.base.Charsets;
 
 import tv.tirco.headhunter.database.DatabaseManager;
 import tv.tirco.headhunter.database.DatabaseManagerFactory;
@@ -15,6 +19,7 @@ import tv.tirco.headhunter.listeners.PlayerPlaceHead;
 public class HeadHunter extends JavaPlugin {
 	
 	public static Plugin plugin;
+	public static HeadHunter headHunter;
 	public final static String playerDataKey = "HeadHunter: Tracked";
 	public static DatabaseManager db;
 	
@@ -28,11 +33,12 @@ public class HeadHunter extends JavaPlugin {
     @Override
     public void onEnable() {
     	plugin = this;
+    	headHunter = this;
         // Don't log enabling, Spigot does that for you automatically!
     	setupFilePaths();
 
         // Commands enabled with following method must have entries in plugin.yml
-        getCommand("HeadHunter").setExecutor(new HeadHunterCommand(this));
+        getCommand("HeadHunter").setExecutor(new HeadHunterCommand());
         registerListeners();
         
         setupInstances();
@@ -57,7 +63,13 @@ public class HeadHunter extends JavaPlugin {
 	
 	private void loadConfig() {
 		// TODO Auto-generated method stub
+		Config.getInstance();
 		
+	}
+	
+	public InputStreamReader getResourceAsReader(String fileName) {
+		InputStream in = getResource(fileName);
+		return in == null ? null : new InputStreamReader(in, Charsets.UTF_8);
 	}
 
 	

@@ -14,6 +14,9 @@ public class MessageHandler {
 	private static MessageHandler instance;
 	public String prefix = "&3[&bHeadHunter&3]";
 	
+	private static boolean debug = false;
+	private static boolean debugToAdmins = false;
+	
 	public static MessageHandler getInstance() {
 		if (instance == null) {
 			instance = new MessageHandler();
@@ -22,18 +25,18 @@ public class MessageHandler {
 	}
 	
 	public void debug(String msg) {
-		if(Config.debug) {
+		if(debug) {
 			Bukkit.getLogger().log(Level.INFO, msg);
 		}
 		
 	}
 	
-	public static void debugs(String msg) {
-		if(Config.debug) {
+	/*public static void debugs(String msg) {
+		if(debug) {
 			Bukkit.getLogger().log(Level.INFO, msg);
 		}
 		
-	}
+	}*/
 	
 	public String translateTags(String s, Player p) {
 		String foundSkulls = "?";
@@ -61,6 +64,15 @@ public class MessageHandler {
 	public static void log(String string) {
 		
 		
+	}
+
+	
+	public void setDebugState(boolean b) {
+		this.debug = b;
+	}
+	
+	public void setDebugToAdminState(boolean b) {
+		this.debugToAdmins = b;
 	}
 
 

@@ -26,7 +26,7 @@ public class PlayerProfileLoadingTask extends BukkitRunnable {
 	public void run() {
 		// Is the player online?
 		if (!player.isOnline()) {
-			MessageHandler.debugs("Aborting profile loading recovery for " + player.getName() + " - player logged out");
+			MessageHandler.getInstance().debug("Aborting profile loading recovery for " + player.getName() + " - player logged out");
 			return;
 		}
 		// increase counter and try to load.
@@ -36,7 +36,7 @@ public class PlayerProfileLoadingTask extends BukkitRunnable {
 
 		PlayerProfile profile = HeadHunter.db.loadPlayerProfile(player.getName(), player.getUniqueId(), true, true);
 		if (profile.isLoaded()) {
-			MessageHandler.debugs("Profile is loaded, applying...");
+			MessageHandler.getInstance().debug("Profile is loaded, applying...");
 			new ApplySuccessfulProfile(new PlayerData(player, profile)).runTask(HeadHunter.plugin);
 			return;
 		}

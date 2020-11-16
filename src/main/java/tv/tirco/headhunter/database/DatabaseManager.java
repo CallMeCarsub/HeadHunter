@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface DatabaseManager {
-	// one month in milliseconds
+	
+	// one month in milliseconds TODO config.
 	public final long PURGE_TIME = 2630000000L * 3;
 
 	/**

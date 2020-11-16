@@ -26,6 +26,7 @@ public class PlayerFileManager implements DatabaseManager {
 	static int PLAYERNAME_POSITION = 0;
 	static int UUID_POSITION = 1;
 	static int LAST_SEEN_POSITION = 2;
+	static int AMOUNT_FOUND_POSITION = 3;
 
 	private static final Object fileWritingLock = new Object();
     public static final int TIME_CONVERSION_FACTOR = 1000;
@@ -49,6 +50,7 @@ public class PlayerFileManager implements DatabaseManager {
 	}
 
 	public void purgePowerlessUsers() {
+		//Should never be used? - Powerless users are not saved.
 		int purgedUsers = 0;
 
 		MessageHandler.log("Purging powerless users...");
@@ -252,6 +254,7 @@ public class PlayerFileManager implements DatabaseManager {
 	public boolean saveUser(PlayerProfile profile) {
 		String playerName = profile.getPlayerName();
 		UUID uuid = profile.getUuid();
+		String amountFound = ""+profile.getAmountFound();
 
 		BufferedReader in = null;
 		FileWriter out = null;
@@ -277,11 +280,12 @@ public class PlayerFileManager implements DatabaseManager {
 						writer.append(uuid != null ? uuid.toString() : "NULL").append(":"); // UUID - 1
 						writer.append(String.valueOf(System.currentTimeMillis() / TIME_CONVERSION_FACTOR))
 						.append(":"); // LastLogin - 2
+						writer.append(amountFound).append(":");//AMOUNT_FOUND_POSITION - 3
 						
 						//Loop through all possible skulls and save the ones that are true.
 						for(int i : profile.getFound().keySet()) {
 							if(profile.getFound().get(i)) {
-								writer.append(i+"=1").append(":"); // level - 2
+								writer.append(i+"=1").append(":");
 							}
 						}					
 						writer.append("BREAK").append(":");
@@ -328,7 +332,8 @@ public class PlayerFileManager implements DatabaseManager {
 				out.append(playerName).append(":"); // PlayerName - line 0
 				out.append(uuid != null ? uuid.toString() : "NULL").append(":"); // UUID - 1
 				out.append(String.valueOf(System.currentTimeMillis() / TIME_CONVERSION_FACTOR)).append(":"); //Time - 2
-				out.append("0=0:");//Unlocked 3 - ?
+				out.append("0:"); //AMOUNT_FOUND_POSITION 3
+				out.append("0=0:");//Unlocked 4 - ?
 				out.append("BREAK:"); // unspent level points - Final
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -433,6 +438,13 @@ public class PlayerFileManager implements DatabaseManager {
 			uuid = null;
 		}
 		String playerName = character[PLAYERNAME_POSITION];
+		int amountFound = 0;
+		try {
+			amountFound = Integer.parseInt(character[AMOUNT_FOUND_POSITION]);
+		} catch(NumberFormatException ex){
+			MessageHandler.getInstance().debug("Error while loading Amount Found for Player " + playerName + ". This will automatically be recounted later, but something must be wrong with saving/loading!");
+		}
+		
 		
 		ArrayList<String> characterList = new ArrayList<String>(Arrays.asList(character));
 		
@@ -441,6 +453,7 @@ public class PlayerFileManager implements DatabaseManager {
 		//String name = character.get(0);
 		
 		characterList.remove(characterList.size()-1); //Remove BREAK
+		characterList.remove(3); //Remove AmountFound
 		characterList.remove(2); //Remove LastSeen
 		characterList.remove(1); //Remove UUID
 		characterList.remove(0); //Remove Name
@@ -448,20 +461,21 @@ public class PlayerFileManager implements DatabaseManager {
 		for(String s : characterList) {
 			
 			String[] foundLine = s.split("=");
+			//TODO implement skip if line does not contain =
 			if(foundLine[1].equalsIgnoreCase("1")) {
 				//Get Found[0] as integer.
 				try{
 					Integer pos = Integer.parseInt(foundLine[0]);
 					found.put(pos, true);
 				} catch(NumberFormatException ex) {
-					MessageHandler.debugs("Failed to parse " + s + " for player " + playerName);
+					MessageHandler.getInstance().debug("Failed to parse " + s + " for player " + playerName);
 					continue;
 				}
 			}
 		}
 		
 
-		return new PlayerProfile(playerName, uuid, found);
+		return new PlayerProfile(playerName, uuid, found, amountFound);
 	}
 
 	public List<String> getStoredUsers() {
@@ -539,18 +553,8 @@ public class PlayerFileManager implements DatabaseManager {
 							continue;
 						}
 
-						/*
-						 * if (Config.getInstance().getTruncateSkills()) { for (AttributeType attribute
-						 * : AttributeType.values()) { int index = getAttributeIndex(attribute); if
-						 * (index >= character.length) { continue; } int cap = attribute.getMaxLevel();
-						 * if (Integer.valueOf(character[index]) > cap) {
-						 * RecklessRPG.p.log("Truncating " + attribute.getName() +
-						 * " to configured max level for player " + character[USERNAME]);
-						 * character[index] = cap + ""; updated = true; } } }
-						 */
-
 						// If they're valid, rewrite them to the file.
-						if (!updated && character.length == 13) {
+						if (!updated) {
 							writer.append(line).append("\r\n");
 							continue;
 						}
@@ -567,7 +571,7 @@ public class PlayerFileManager implements DatabaseManager {
 					out = new FileWriter(usersFilePath);
 					out.write(writer.toString());
 				} catch (IOException e) {
-					// RecklessRPG.p.logError("Exception while reading " + usersFilePath + " (Are
+					// logError("Exception while reading " + usersFilePath + " (Are
 					// you sure you formatted it correctly?)" + e.toString());
 				} finally {
 					if (in != null) {
@@ -592,7 +596,6 @@ public class PlayerFileManager implements DatabaseManager {
 		usersFile.getParentFile().mkdir();
 
 		try {
-			// RecklessRPG.p.debug("Creating RecklessRPG.users file...");
 			new File(HeadHunter.getUsersFilePath()).createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -607,7 +610,6 @@ public class PlayerFileManager implements DatabaseManager {
 
 	@Override
 	public PlayerProfile loadPlayerProfile(UUID uuid, boolean createNew) {
-		// TODO Auto-generated method stub
 		return loadPlayerProfile("", uuid, createNew);
 	}
 
