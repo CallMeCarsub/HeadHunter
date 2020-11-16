@@ -3,8 +3,10 @@
 * /hh list  -- Shows a list of all heads you have found, + allows you to hover them for hints.
 * /hh count -- Shows the amount of heads you have found.
 * /hh top -- Shows the leaderboard.
+* /hh help
 
 # * /headhunteradmin or /hha
+* /hha help
 * /hha find (id) -- Gives you the coords and a clickable button to TP to it.
 * /hha delete (id) -- Deletes the specified ID from database. Block is not deleted.
 * /hha sethint (id) (msg) -- Sets a message as the hint for the specified ID.
