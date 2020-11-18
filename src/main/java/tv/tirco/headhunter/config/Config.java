@@ -35,6 +35,10 @@ public class Config extends AutoUpdateConfigLoader {
 			MessageHandler.getInstance().setDebugState(true);
 			MessageHandler.getInstance().debug("Debugging has been enabled.");
 		}
+		if (getDebugToAdmins()) {
+			MessageHandler.getInstance().setDebugState(true);
+			MessageHandler.getInstance().debug("Debug loggint to admins has been enabled.");
+		}
 
 		// If the reason list is empty, keys are valid.
 			MessageHandler.getInstance().updatePrefix(getMessagePrefix());

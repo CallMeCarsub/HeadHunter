@@ -136,15 +136,15 @@ public class PapiExpansion extends PlaceholderExpansion {
         
         // %headhunter_stats_top_13%
         if(identifier.matches("stats_top_[0-9][0-9]*")) {
-        	MessageHandler.getInstance().debug(ChatColor.GOLD + " -- Sending PlaceHolder Data");
+        	//MessageHandler.getInstance().debug(ChatColor.GOLD + " -- Sending PlaceHolder Data");
         	int number = Integer.valueOf(identifier.split("_")[2]) - 1;
-        	MessageHandler.getInstance().debug(ChatColor.GOLD + " -- Number = " + number);
+        	//MessageHandler.getInstance().debug(ChatColor.GOLD + " -- Number = " + number);
         	UUID uuid = Heads.getInstance().getTopPlayerPlayer(number); 
         	if(uuid == null) {
-        		MessageHandler.getInstance().debug(ChatColor.GOLD + " -- UUID was null. Defaulting to no data");
+        		//MessageHandler.getInstance().debug(ChatColor.GOLD + " -- UUID was null. Defaulting to no data");
         		return "No data";
         	}
-        	MessageHandler.getInstance().debug(ChatColor.GOLD + " -- UUID was not null. " + uuid.toString());
+        	//MessageHandler.getInstance().debug(ChatColor.GOLD + " -- UUID was not null. " + uuid.toString());
         	OfflinePlayer oPlayer = Bukkit.getOfflinePlayer(uuid);
         	int score = Heads.getInstance().getTopPlayerScore(oPlayer);
         	String name = oPlayer.getName();
@@ -155,15 +155,15 @@ public class PapiExpansion extends PlaceholderExpansion {
         }
         
         if(identifier.matches("stats_top_name_[0-9][0-9]*")) {
-        	MessageHandler.getInstance().debug(ChatColor.GOLD + " -- Sending PlaceHolder Data");
+        	//MessageHandler.getInstance().debug(ChatColor.GOLD + " -- Sending PlaceHolder Data");
         	int number = Integer.valueOf(identifier.split("_")[3]) - 1;
-        	MessageHandler.getInstance().debug(ChatColor.GOLD + " -- Number = " + number);
+        	//MessageHandler.getInstance().debug(ChatColor.GOLD + " -- Number = " + number);
         	UUID uuid = Heads.getInstance().getTopPlayerPlayer(number); 
         	if(uuid == null) {
-        		MessageHandler.getInstance().debug(ChatColor.GOLD + " -- UUID was null. Defaulting to no data");
+        		//MessageHandler.getInstance().debug(ChatColor.GOLD + " -- UUID was null. Defaulting to no data");
         		return "No data";
         	}
-        	MessageHandler.getInstance().debug(ChatColor.GOLD + " -- UUID was not null. " + uuid.toString());
+        	//MessageHandler.getInstance().debug(ChatColor.GOLD + " -- UUID was not null. " + uuid.toString());
         	OfflinePlayer oPlayer = Bukkit.getOfflinePlayer(uuid);
         	String name = oPlayer.getName();
         	if(name == null) {
@@ -172,15 +172,15 @@ public class PapiExpansion extends PlaceholderExpansion {
         	return name;
         }
         if(identifier.matches("stats_top_score_[0-9][0-9]*")) {
-        	MessageHandler.getInstance().debug(ChatColor.GOLD + " -- Sending PlaceHolder Data");
+        	//MessageHandler.getInstance().debug(ChatColor.GOLD + " -- Sending PlaceHolder Data");
         	int number = Integer.valueOf(identifier.split("_")[3]) - 1;
-        	MessageHandler.getInstance().debug(ChatColor.GOLD + " -- Number = " + number);
+        	//MessageHandler.getInstance().debug(ChatColor.GOLD + " -- Number = " + number);
         	UUID uuid = Heads.getInstance().getTopPlayerPlayer(number); 
         	if(uuid == null) {
-        		MessageHandler.getInstance().debug(ChatColor.GOLD + " -- UUID was null. Defaulting to no data");
+        		//MessageHandler.getInstance().debug(ChatColor.GOLD + " -- UUID was null. Defaulting to no data");
         		return "No data";
         	}
-        	MessageHandler.getInstance().debug(ChatColor.GOLD + " -- UUID was not null. " + uuid.toString());
+        	//MessageHandler.getInstance().debug(ChatColor.GOLD + " -- UUID was not null. " + uuid.toString());
         	OfflinePlayer oPlayer = Bukkit.getOfflinePlayer(uuid);
         	int score = Heads.getInstance().getTopPlayerScore(oPlayer);
         	return ""+score;

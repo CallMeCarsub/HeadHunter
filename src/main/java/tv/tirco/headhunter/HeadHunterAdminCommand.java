@@ -57,7 +57,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		}
     		PlayerData pData = UserManager.getPlayer(player);
     		if(args.length > 1) {
-    			if(args[1].equalsIgnoreCase("on")) {
+    			if(args[1].equalsIgnoreCase("on") || args[1].equalsIgnoreCase("true")) {
     				pData.setAddMode(true);
     			} else {
     				pData.setAddMode(false);
@@ -77,7 +77,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		
     		boolean state = !MessageHandler.getInstance().getDebugState();
     		if(args.length > 1) {
-    			if(args[1].equalsIgnoreCase("on")) {
+    			if(args[1].equalsIgnoreCase("on") || args[1].equalsIgnoreCase("true")) {
     				state = true;
     			} else {
     				state = false;
@@ -92,7 +92,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     	
     		boolean state = !MessageHandler.getInstance().getDebugToAdminState();
     		if(args.length > 1) {
-    			if(args[1].equalsIgnoreCase("on")) {
+    			if(args[1].equalsIgnoreCase("on") || args[1].equalsIgnoreCase("true")) {
     				state = true;
     			} else {
     				state = false;

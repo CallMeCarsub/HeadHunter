@@ -32,6 +32,7 @@ public class PlayerProfile {
 		if(this.found == null) {
 			this.found = new HashMap<Integer,Boolean>();
 		}
+		validateHeads();
 	}
 	
 	public PlayerProfile(String playerName) {
