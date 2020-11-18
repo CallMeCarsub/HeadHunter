@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,10 +14,12 @@ import tv.tirco.headhunter.config.Config;
 import tv.tirco.headhunter.database.DatabaseManager;
 import tv.tirco.headhunter.database.DatabaseManagerFactory;
 import tv.tirco.headhunter.database.SaveTimerTask;
+import tv.tirco.headhunter.database.UserManager;
 import tv.tirco.headhunter.listeners.PlayerBreakBlock;
 import tv.tirco.headhunter.listeners.PlayerClickBlock;
 import tv.tirco.headhunter.listeners.PlayerJoinListener;
 import tv.tirco.headhunter.listeners.PlayerPlaceHead;
+import tv.tirco.headhunter.papi.PapiExpansion;
 
 
 public class HeadHunter extends JavaPlugin {
@@ -26,11 +29,15 @@ public class HeadHunter extends JavaPlugin {
 	public final static String playerDataKey = "HeadHunter: Tracked";
 	public static DatabaseManager db;
 	
+	public PapiExpansion placeholders;
+	public boolean papi = false;
+	
 
 	
     @Override
     public void onDisable() {
-        // Don't log disabling, Spigot does that for you automatically!
+    	UserManager.saveAll();
+    	Heads.getInstance().saveHeads();
     }
 
     @Override
@@ -43,6 +50,7 @@ public class HeadHunter extends JavaPlugin {
 
         // Commands enabled with following method must have entries in plugin.yml
         getCommand("HeadHunter").setExecutor(new HeadHunterCommand());
+        getCommand("HeadHunterAdmin").setExecutor(new HeadHunterAdminCommand());
         registerListeners();
         
         setupInstances();
@@ -52,6 +60,13 @@ public class HeadHunter extends JavaPlugin {
         db = DatabaseManagerFactory.getDatabaseManager();
         
         scheduleTasks();
+        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+			placeholders = new PapiExpansion(this);
+            placeholders.register();
+            this.papi = true;
+		}
+
+
     }
 
 	private void scheduleTasks() {

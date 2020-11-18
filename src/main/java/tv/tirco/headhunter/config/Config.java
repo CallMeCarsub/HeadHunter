@@ -41,6 +41,7 @@ public class Config extends AutoUpdateConfigLoader {
 		return noErrorsInConfig(reason);
 	}
 
+	@SuppressWarnings("unused")
 	private String getStringIncludingInts(String key) {
 		String str = config.getString(key);
 
@@ -78,7 +79,7 @@ public class Config extends AutoUpdateConfigLoader {
 
 	/* Database Purging */
 	public int getOldUsersCutoff() { //How long in months we should wait before we remove a user.
-		return config.getInt("setting.purgeafter", 6);
+		return config.getInt("setting.purgeafter", 0);
 	}
 	
 	public boolean getAnnounceFindAll() {
@@ -105,5 +106,10 @@ public class Config extends AutoUpdateConfigLoader {
 	
 	public boolean getNeedPermToHunt() {
 		return config.getBoolean("setting.huntingrequiresperm",false);
+	}
+
+	
+	public int getTopAmount() {
+		return config.getInt("setting.topamountsaved", 10);
 	}
 }

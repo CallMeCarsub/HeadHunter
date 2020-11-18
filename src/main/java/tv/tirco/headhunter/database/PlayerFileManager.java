@@ -18,6 +18,7 @@ import org.bukkit.OfflinePlayer;
 
 import tv.tirco.headhunter.HeadHunter;
 import tv.tirco.headhunter.MessageHandler;
+import tv.tirco.headhunter.config.Config;
 
 public class PlayerFileManager implements DatabaseManager {
 
@@ -128,6 +129,10 @@ public class PlayerFileManager implements DatabaseManager {
 	public void purgeOldUsers() {
 		int removedPlayers = 0;
 		long currentTime = System.currentTimeMillis();
+		
+		if(Config.getInstance().getOldUsersCutoff() == 0) {
+			return;
+		}
 
 		MessageHandler.getInstance().log("Purging old users...");
 

@@ -56,7 +56,6 @@ public class MessageHandler {
 		
 		
 		//<found>,<playername> 
-		s = ChatColor.translateAlternateColorCodes('&', s);
 		s = s.replace("<playername>", p.getName());
 		s = s.replace("<found>", foundSkulls);
 		return translateTags(s);
@@ -65,6 +64,7 @@ public class MessageHandler {
 	public String translateTags(String s) {
 		//<max>
 		s = s.replace("<max>", "" + Heads.getInstance().getHeadAmount());
+		s = ChatColor.translateAlternateColorCodes('&', s);
 		return s;
 	}
 
@@ -82,6 +82,14 @@ public class MessageHandler {
 	
 	public void setDebugToAdminState(boolean b) {
 		this.debugToAdmins = b;
+	}
+	
+	public boolean getDebugState() {
+		return this.debug;
+	}
+	
+	public boolean getDebugToAdminState() {
+		return this.debugToAdmins;
 	}
 
 

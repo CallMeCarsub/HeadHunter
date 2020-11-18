@@ -11,10 +11,12 @@ commands:
         description: An example command
         permission: headhunter.basic
         usage: /<command>
-    headhunteradming:
+        aliases: hh
+    headhunteradmin:
         description: An example command
-        permission: headhunter.basic
+        permission: headhunter.admin
         usage: /<command>
+        aliases: hha
 
 permissions:
     headhunter.basic:

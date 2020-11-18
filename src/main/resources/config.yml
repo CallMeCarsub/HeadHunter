@@ -30,6 +30,9 @@ setting:
 ##Do you need the headhunter.basic permission to unlock heads?
     huntingrequiresperm: false
 
+##How many players should our top list store? -- Stored in Heads.yml
+##
+    topamountsaved: 20
 ############
 ##Messages##
 ############

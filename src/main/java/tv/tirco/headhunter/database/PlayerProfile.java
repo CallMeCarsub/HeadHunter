@@ -15,6 +15,7 @@ public class PlayerProfile {
 	private boolean loaded;
 	private volatile boolean changed;
 	private int foundAmount;
+	private boolean addMode = false;
 	
 	private HashMap<Integer,Boolean> found;
 	
@@ -159,6 +160,8 @@ public class PlayerProfile {
 	public void find(int id) {
 		found.put(id, true);
 		changed = true;
+		getAmountFound();
+		Heads.getInstance().updateTopScore(uuid, foundAmount);
 	}
 	
 	public int getAmountFound() {
@@ -171,6 +174,19 @@ public class PlayerProfile {
 		//Update internal statistic for saving & scoreboard
 		this.foundAmount = amountFound;
 		return amountFound;
+	}
+
+	
+	public void toggleAddMode() {
+		this.addMode = !addMode;
+	}
+	
+	public void setAddMode(boolean state) {
+		this.addMode = state;
+	}
+	
+	public boolean getAddMode() {
+		return addMode;
 	}
 	
 
