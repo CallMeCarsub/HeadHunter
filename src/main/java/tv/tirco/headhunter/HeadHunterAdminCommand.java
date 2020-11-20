@@ -67,7 +67,6 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		}
     		Boolean addMode = pData.getAddMode();
     		player.sendMessage(prefix + " Add mode is set to " + (addMode ? ChatColor.GREEN : ChatColor.RED) + addMode);
-    		//TODO Fancy Message + Instructions if true.
     		if(addMode) {
     			player.sendMessage(prefix + ChatColor.RED +  " Warning:" + ChatColor.GREEN + " All playerheads you now place will automatically be added to the HeadHunter list.");
     		}

@@ -33,9 +33,6 @@ public class PlayerFileManager implements DatabaseManager {
     public static final int TIME_CONVERSION_FACTOR = 1000;
     public static final int TICK_CONVERSION_FACTOR = 20;
 
-	// private static final long PURGE_TIME = 999999999; //TODO set this to a
-	// reachable time
-
 	@SuppressWarnings("unused")
 	private final long UPDATE_WAIT_TIME = 600000L; // 10 minutes - TODO add autoUpdate?
 
