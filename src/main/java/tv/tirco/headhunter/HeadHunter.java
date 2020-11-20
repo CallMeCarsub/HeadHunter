@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.base.Charsets;
 
@@ -65,6 +66,17 @@ public class HeadHunter extends JavaPlugin {
             placeholders.register();
             this.papi = true;
 		}
+        
+        //Load our heads after worlds and all are loaded.
+        new BukkitRunnable() {
+            
+            @Override
+            public void run() {
+            	Heads.getInstance().loadFromFile();
+            }
+            
+        }.runTaskLater(this, 20);
+
 
 
     }
@@ -92,7 +104,7 @@ public class HeadHunter extends JavaPlugin {
 
 	private void setupInstances() {
 		MessageHandler.getInstance();
-		Heads.getInstance().loadFromFile();
+		
 	}
 	
 	private void loadConfig() {

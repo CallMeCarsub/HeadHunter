@@ -29,6 +29,9 @@ public class ParticleRunnable extends BukkitRunnable {
 			for(Integer i: Heads.getInstance().getHeads().keySet()) {
 				if(!pData.hasFound(i.intValue())){
 					Location l = Heads.getInstance().getHeads().get(i);
+					if(l.getWorld() == null || l.getWorld() != p.getWorld()) {
+						return;
+					}
 					if(l.distance(p.getLocation()) < 10.00) {
 						p.spawnParticle(Particle.END_ROD, l.getX()+0.5, l.getY()+0.5, l.getZ()+0.5, 1, 0.3, 0.3, 0.3, 0);
 					}
@@ -37,14 +40,5 @@ public class ParticleRunnable extends BukkitRunnable {
 			}
 		}
 	}
-	
-	
-	
-	
-	    
-	    
-	    
-
-	             
-	      
+	     
 }

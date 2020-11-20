@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -106,11 +107,16 @@ public class HeadFileManager {
 	        			 Double X = yamlFile.getDouble("heads." +key+".x");
 		        		 Double Y = yamlFile.getDouble("heads." +key+".y");
 		        		 Double Z = yamlFile.getDouble("heads." +key+".z");
-		        		 String World = yamlFile.getString("heads." +key+".world");
-		        		 String Hint = yamlFile.getString("heads." +key+".hint");
-		        		 Location loc = new Location(Bukkit.getWorld(World), X, Y, Z);
+		        		 String world = yamlFile.getString("heads." +key+".world");
+		        		 String hint = yamlFile.getString("heads." +key+".hint");
+		        		 World worldObject = Bukkit.getWorld(world);
+		        		 if(worldObject == null) {
+		        			 MessageHandler.getInstance().log("Warning: Could not find the world" + world + " defaulting to overworld.");
+		        			 worldObject = Bukkit.getWorlds().get(0);
+		        		 }
+		        		 Location loc = new Location(worldObject, X, Y, Z);
 		        		 Heads.getInstance().addHead(id,loc,true);
-		        		 Heads.getInstance().setHint(id, Hint);
+		        		 Heads.getInstance().setHint(id, hint);
 	        		 } catch(Exception ex) {
 	        			 ex.printStackTrace();
 	        		 }
