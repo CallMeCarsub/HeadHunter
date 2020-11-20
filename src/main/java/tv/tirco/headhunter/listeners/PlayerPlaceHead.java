@@ -12,6 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import tv.tirco.headhunter.Heads;
+import tv.tirco.headhunter.database.PlayerData;
+import tv.tirco.headhunter.database.UserManager;
 
 public class PlayerPlaceHead implements Listener {
 	
@@ -32,8 +34,14 @@ public class PlayerPlaceHead implements Listener {
 			return;
 		}
 		
-		//Check if item in hand has correct lore?
-		//TODO
+		//Check if player is in add mode.
+		if(!UserManager.hasPlayerDataKey(p)) {
+			return;
+		}
+		PlayerData pData = UserManager.getPlayer(p);
+		if(!pData.getAddMode()) {
+			return;
+		}
 		
 		//Add Data to HM
 		Location loc = block.getLocation();

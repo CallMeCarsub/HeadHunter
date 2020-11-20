@@ -3,14 +3,14 @@
 ###########
 setting:
 ##Should we display messages to console?
-    debug: true
+    debug: false
 
 ##Should we overwrite this config if there's an update to it?
     update_overwrite: true
     
 ##Announce debugs to admins? headhunter.admin permission node.
 ##Can be turned on temporarily with the /headhunteradmin debug command
-    debugtoadmins: true
+    debugtoadmins: false
 
 ##Should the heads emit particles? Not yet implemented.
     particles: true
@@ -25,11 +25,14 @@ setting:
 
 ##How long ago should a player have logged in before we purge their data? (Months)
 ##0 = never purge.
-    purgeafter: 3
+    purgeafter: 0
 
 ##Do you need the headhunter.basic permission to unlock heads?
     huntingrequiresperm: false
 
+##How many players should our top list store? -- Stored in Heads.yml
+##
+    topamountsaved: 20
 ############
 ##Messages##
 ############
@@ -49,13 +52,3 @@ messages:
 ##<found>, <max>, <playername>
     repeatmessage: "&aYou have already found this head."
 
-
-##These are the heads that are stored. Please edit from ingame so values are correct.
-##Is saved under heads.yml, this is just an explanation
-heads:
-    1:
-        x: 0
-        y: 0 
-        z: 0
-        world: default
-        hint: ""

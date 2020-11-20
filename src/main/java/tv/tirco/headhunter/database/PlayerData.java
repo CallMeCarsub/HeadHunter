@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import tv.tirco.headhunter.HeadHunter;
+import tv.tirco.headhunter.Heads;
 
 public class PlayerData {
 	//Class used to access PlayerProfile information.
@@ -30,6 +31,9 @@ public class PlayerData {
 		if (profile.getUuid() == null) {
 			profile.setUuid(uuid);
 		}
+		
+		Heads.getInstance().updateTopScore(player, getAmountFound());
+
 	}
 	
 	public void save() {
@@ -91,6 +95,23 @@ public class PlayerData {
 		}
 
 		UserManager.remove(thisPlayer);
+	}
+
+	
+	public void toggleAddMode() {
+		profile.toggleAddMode();
+	}
+	
+	public void setAddMode(Boolean state) {
+		profile.setAddMode(state);
+	}
+	
+	public boolean getAddMode() {
+		return profile.getAddMode();
+	}
+
+	public FixedMetadataValue getPlayerMetadata() {
+		return playerMetadata;
 	}
 
 }

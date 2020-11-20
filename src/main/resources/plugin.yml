@@ -5,16 +5,19 @@ author: ${author}
 website: ${url}
 api-version: 1.16
 main: ${mainClass}
+softdepend: [Multiverse-core]
 
 commands:
     headhunter:
         description: An example command
         permission: headhunter.basic
         usage: /<command>
-    headhunteradming:
+        aliases: hh
+    headhunteradmin:
         description: An example command
-        permission: headhunter.basic
+        permission: headhunter.admin
         usage: /<command>
+        aliases: hha
 
 permissions:
     headhunter.basic:

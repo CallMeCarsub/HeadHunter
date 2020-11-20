@@ -2,8 +2,13 @@ package tv.tirco.headhunter.database;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -39,8 +44,18 @@ public class HeadFileManager {
 			yamlFile.set("heads.id" + i + ".y", heads.get(i).getY());
 			yamlFile.set("heads.id" + i + ".z", heads.get(i).getZ());
 			yamlFile.set("heads.id" + i + ".world", heads.get(i).getWorld().getName());
-			//yamlFile.set("heads." + i + ".world", headHints.get(i));
+			yamlFile.set("heads.id" + i + ".hint", Heads.getInstance().getHint(i));
 		}
+		
+		MessageHandler.getInstance().debug(ChatColor.GOLD + " Saving topScores...");
+		LinkedHashMap<UUID,Integer> topScores = Heads.getInstance().getSortedTopMap();
+		MessageHandler.getInstance().debug(ChatColor.GOLD + " Retreived scores from heads.java. Looping:");
+		for(UUID uuid : topScores.keySet()) {
+			MessageHandler.getInstance().debug(ChatColor.GOLD + " UUID is " + uuid);
+			yamlFile.set("scores." + uuid, topScores.get(uuid));
+			MessageHandler.getInstance().debug(ChatColor.GOLD + " Set path scores."+uuid + " to " + topScores.get(uuid));
+		}
+		MessageHandler.getInstance().debug(ChatColor.GOLD + " Loop complete.");
 
 		try {
 			yamlFile.save(f);
@@ -92,15 +107,42 @@ public class HeadFileManager {
 	        			 Double X = yamlFile.getDouble("heads." +key+".x");
 		        		 Double Y = yamlFile.getDouble("heads." +key+".y");
 		        		 Double Z = yamlFile.getDouble("heads." +key+".z");
-		        		 String World = yamlFile.getString("heads." +key+".world");
-		        		 String Hint = yamlFile.getString("heads." +key+".hint");
-		        		 Location loc = new Location(Bukkit.getWorld(World), X, Y, Z);
+		        		 String world = yamlFile.getString("heads." +key+".world");
+		        		 String hint = yamlFile.getString("heads." +key+".hint");
+		        		 World worldObject = Bukkit.getWorld(world);
+		        		 if(worldObject == null) {
+		        			 MessageHandler.getInstance().log("Warning: Could not find the world" + world + " defaulting to overworld.");
+		        			 worldObject = Bukkit.getWorlds().get(0);
+		        		 }
+		        		 Location loc = new Location(worldObject, X, Y, Z);
 		        		 Heads.getInstance().addHead(id,loc,true);
+		        		 Heads.getInstance().setHint(id, hint);
 	        		 } catch(Exception ex) {
 	        			 ex.printStackTrace();
 	        		 }
 	        		 
 	        	 }
+	        	 
+	         }
+	         
+	         if(yamlFile.contains("scores")){
+	        	 MessageHandler.getInstance().log(ChatColor.GOLD + " Parsing through scores...");
+	        	 for(String key : yamlFile.getConfigurationSection("scores").getKeys(false)) {
+	        		 //Stored as "scores.<uuid>: score
+	        		 try {
+	        			 String uuid = key;
+	        			 UUID ID = UUID.fromString(uuid);
+	        			 int score = yamlFile.getInt("scores." +uuid);
+	        			 OfflinePlayer oPlayer = Bukkit.getOfflinePlayer(ID);
+	        			 Heads.getInstance().updateTopScore(oPlayer, score);
+	        			 MessageHandler.getInstance().debug(ChatColor.GOLD + " Added " + oPlayer.getName() + " with the score " + score );
+	        		 } catch(Exception ex) {
+	        			 ex.printStackTrace();
+	        		 }
+	        		 
+	        	 }
+	        	 MessageHandler.getInstance().debug(ChatColor.GOLD + " Updating sorted score list");
+	        	 Heads.getInstance().updatedSortedList();
 	        	 
 	         }
 
