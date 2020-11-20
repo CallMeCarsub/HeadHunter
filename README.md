@@ -19,11 +19,11 @@
 - headhunter.admin -- Allows use of adding and removing heads.
 
 ## Placeholders
-%headhunter_player_found_amount% - shows the amount of heads the player has found.
-%headhunter_maxheads% - shows the amount of heads that can be found.
-%headhunter_stats_top_#% - replace # with a number. Displays the name and score of the player at the stated rank. Do not use a number higher than how many people are stated to be saved in the config file.
-%headhunter_stats_top_name_#% - replace # with a number. Shows the name of the player at that rank.
-%headhunter_stats_top_score_#% - replace # with a number. Shows the score of the player at that rank.
+* %headhunter_player_found_amount% - shows the amount of heads the player has found.
+* %headhunter_maxheads% - shows the amount of heads that can be found.
+* %headhunter_stats_top_#% - replace # with a number. Displays the name and score of the player at the stated rank. Do not use a number higher than how many people are stated to be saved in the config file.
+* %headhunter_stats_top_name_#% - replace # with a number. Shows the name of the player at that rank.
+* %headhunter_stats_top_score_#% - replace # with a number. Shows the score of the player at that rank.
 
 
 ## Credits
