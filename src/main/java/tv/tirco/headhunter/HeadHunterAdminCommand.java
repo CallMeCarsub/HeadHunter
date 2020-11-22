@@ -3,6 +3,7 @@ package tv.tirco.headhunter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -81,9 +82,8 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     			} else {
     				state = false;
     			}
-    		} else {
-    			MessageHandler.getInstance().setDebugState(state);
     		}
+    		MessageHandler.getInstance().setDebugState(state);
     		player.sendMessage(prefix + " Debug has now been set to " + (state ? ChatColor.GREEN : ChatColor.RED) + state);
     		return true;
     		
@@ -96,11 +96,39 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     			} else {
     				state = false;
     			}
-    		} else {
-    			MessageHandler.getInstance().setDebugToAdminState(state);
     		}
+    		MessageHandler.getInstance().setDebugToAdminState(state);
     		player.sendMessage(prefix + " AdminNotifications has now been set to " + (state ? ChatColor.GREEN : ChatColor.RED) + state);
     		return true;
+    	} else if(args[0].equals("findforuser")) {
+    		//hha findforuser name id
+    		if(args.length < 3) {
+    			player.sendMessage(prefix + " /hha findforuser name id");
+    			return true;
+    		}
+    		String playerName = args[1];
+    		int id = 0;
+        	try {
+        		id = Integer.parseInt(args[2]);
+        	} catch(NumberFormatException ex) {
+        		player.sendMessage(prefix + " Could not parse " + args[2] + " to a number.");
+        		player.sendMessage(prefix + " /hha findforuser name id");
+        		return false;
+        	}
+        	
+        	Player target = Bukkit.getPlayerExact(playerName);
+        	if(target == null) {
+        		player.sendMessage(prefix +"The specified player "+ playerName + " could not be found.");
+        		return true;
+        	}
+        	if(!UserManager.hasPlayerDataKey(target)) {
+        		player.sendMessage(prefix +"The specified player "+ playerName + " is not currently loaded.");
+        		return true;
+        	}
+        	PlayerData tData = UserManager.getPlayer(target);
+        	tData.find(id);
+        	player.sendMessage(prefix + " The head " + args[2] + " has been unlocked for player " + playerName);
+        	return true;
     	}
     	
     	if(args.length < 2) {
@@ -150,6 +178,8 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		player.sendMessage(ChatColor.GREEN + "Head " + id + " now has its hint set as:");
     		player.sendMessage(ChatColor.translateAlternateColorCodes('&', hint));
     		return true;
+    	} else if(args[0].equals("setname")) {
+    		
     	}
     	
         return true;
@@ -157,7 +187,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave");
+		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","setfound");
 		switch (args.length) {
 		case 1:
 			return StringUtil.copyPartialMatches(args[0], commands, new ArrayList<String>(commands.size()));
