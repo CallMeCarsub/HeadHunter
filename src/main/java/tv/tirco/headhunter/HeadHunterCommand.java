@@ -36,12 +36,12 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
     	Player player = (Player) sender;
 
     	if(args.length < 1) {
-			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCount(), player);
+			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCountCommand(), player);
 			player.sendMessage(s);
         	return true;
     	} else {
     		if(args[0].equalsIgnoreCase("count")) {
-    			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCount(), player);
+    			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCountCommand(), player);
     			player.sendMessage(s);
     		} else if(args[0].equalsIgnoreCase("list")) {
     			if(!UserManager.hasPlayerDataKey(player)){
@@ -77,7 +77,7 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
     			
     			player.sendMessage(prefix + " /hh list - List the heads you have and have not found.");
     			player.sendMessage(prefix + " /hh count - Shows the amount of heads you have found.");
-    			player.sendMessage(prefix + " /hh top - Get the list of the users that have found the most.");
+    			//player.sendMessage(prefix + " /hh top - Get the list of the users that have found the most.");
     			return true;
     		}
     	}

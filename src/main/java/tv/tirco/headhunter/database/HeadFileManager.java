@@ -51,9 +51,9 @@ public class HeadFileManager {
 		LinkedHashMap<UUID,Integer> topScores = Heads.getInstance().getSortedTopMap();
 		MessageHandler.getInstance().debug(ChatColor.GOLD + " Retreived scores from heads.java. Looping:");
 		for(UUID uuid : topScores.keySet()) {
-			MessageHandler.getInstance().debug(ChatColor.GOLD + " UUID is " + uuid);
+			//MessageHandler.getInstance().debug(ChatColor.GOLD + " UUID is " + uuid);
 			yamlFile.set("scores." + uuid, topScores.get(uuid));
-			MessageHandler.getInstance().debug(ChatColor.GOLD + " Set path scores."+uuid + " to " + topScores.get(uuid));
+			//MessageHandler.getInstance().debug(ChatColor.GOLD + " Set path scores."+uuid + " to " + topScores.get(uuid));
 		}
 		MessageHandler.getInstance().debug(ChatColor.GOLD + " Loop complete.");
 

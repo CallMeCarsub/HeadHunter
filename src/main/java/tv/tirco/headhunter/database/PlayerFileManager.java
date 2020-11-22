@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import tv.tirco.headhunter.HeadHunter;
@@ -126,6 +125,11 @@ public class PlayerFileManager implements DatabaseManager {
 	public void purgeOldUsers() {
 		int removedPlayers = 0;
 		long currentTime = System.currentTimeMillis();
+		
+		Boolean notEnabled = true;
+		if(notEnabled) {
+			return;
+		}
 		
 		if(Config.getInstance().getOldUsersCutoff() == 0) {
 			return;
@@ -286,14 +290,23 @@ public class PlayerFileManager implements DatabaseManager {
 							.append(":"); // LastLogin - 2
 							writer.append(amountFound).append(":");//AMOUNT_FOUND_POSITION - 3
 							
-							//Loop through all possible skulls and save the ones that are true.
+							//Loop through all skulls and save the ones that are true.
+							int saved = 0;
 							for(int i : profile.getFound().keySet()) {
 								if(profile.getFound().get(i)) {
 									writer.append(i+"=1").append(":");
+									saved++;
 								}
-							}					
+							}
+							if(saved == 0) {
+								writer.append("0=0:"); //Make sure that saved heads isn't empty!
+								//Allthough... if it is, why would it try to be saved? o.o
+								MessageHandler.getInstance().debug("SaveData for player " + playerName + "was saved with an empty saved-list.");
+							}
 							writer.append("BREAK").append(":");
 							writer.append("\r\n");
+						} else {
+							MessageHandler.getInstance().debug("Cleared savedata for player " + playerName + " as they have not found any heads.");
 						}
 						
 					}
@@ -356,13 +369,13 @@ public class PlayerFileManager implements DatabaseManager {
 		}
 	}
 
-	public PlayerProfile loadPlayerProfile(String playerName, boolean create) {
-		return loadPlayerProfile(playerName, null, false);
-	}
+//	public PlayerProfile loadPlayerProfile(String playerName, boolean create) {
+//		return loadPlayerProfile(playerName, null, false);
+//	}
 
-	public PlayerProfile loadPlayerProfile(UUID uuid) {
-		return loadPlayerProfile("", uuid, false);
-	}
+//	public PlayerProfile loadPlayerProfile(UUID uuid) {
+//		return loadPlayerProfile("", uuid, false);
+//	}
 
 	public PlayerProfile loadPlayerProfile(String playerName, UUID uuid, boolean create) {
 		BufferedReader in = null;
@@ -402,11 +415,11 @@ public class PlayerFileManager implements DatabaseManager {
 
 				// Didn't find the player, create a new one
 				if (create) {
-					Bukkit.getConsoleSender().sendMessage("Didn't find player, creating new one...");
+					MessageHandler.getInstance().log("Didn't find player, creating new one...");
 					if (uuid == null) {
-						Bukkit.getConsoleSender().sendMessage("UUID of new player is NULL");
+						MessageHandler.getInstance().log("UUID of new player is NULL");
 						newUser(playerName, uuid);
-						return new PlayerProfile(playerName, true);
+						return new PlayerProfile(playerName, null, false);
 					}
 
 					newUser(playerName, uuid);
@@ -429,10 +442,10 @@ public class PlayerFileManager implements DatabaseManager {
 
 		// Return unloaded profile
 		if (uuid == null) {
-			return new PlayerProfile(playerName);
+			return new PlayerProfile(playerName, null, false);
 		}
 
-		return new PlayerProfile(playerName, uuid);
+		return new PlayerProfile(playerName, uuid, true);
 	}
 
 	private PlayerProfile loadFromLine(String[] character) {
@@ -609,16 +622,18 @@ public class PlayerFileManager implements DatabaseManager {
 		}
 	}
 
-	@Override
+	/**
+	 * 
+	 */
 	public PlayerProfile loadPlayerProfile(String playerName, UUID uuid, boolean create, boolean retry) {
 		// Retry is not used here.
 		return loadPlayerProfile(playerName, uuid, create);
 	}
 
-	@Override
-	public PlayerProfile loadPlayerProfile(UUID uuid, boolean createNew) {
-		return loadPlayerProfile("", uuid, createNew);
-	}
+//	@Override
+//	public PlayerProfile loadPlayerProfile(UUID uuid, boolean createNew) {
+//		return loadPlayerProfile("", uuid, createNew);
+//	}
 
 
 }

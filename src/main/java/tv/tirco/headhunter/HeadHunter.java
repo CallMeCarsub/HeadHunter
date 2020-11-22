@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -37,8 +38,21 @@ public class HeadHunter extends JavaPlugin {
 	
     @Override
     public void onDisable() {
-    	UserManager.saveAll();
-    	Heads.getInstance().saveHeads();
+    	try {
+        	UserManager.saveAll();
+        	UserManager.clearAll(); //Removes tracking of everyone.
+        	Heads.getInstance().saveHeads();
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
+    	}
+    	
+        MessageHandler.getInstance().log("Canceling all tasks...");
+        getServer().getScheduler().cancelTasks(this); // This removes our tasks
+        MessageHandler.getInstance().log("Unregister all events...");
+        HandlerList.unregisterAll(this); // Cancel event registrations
+
+        
+        MessageHandler.getInstance().log("Has been disabled.");
     }
 
     @Override

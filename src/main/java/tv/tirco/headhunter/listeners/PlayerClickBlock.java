@@ -60,6 +60,7 @@ public class PlayerClickBlock implements Listener {
 			pData.find(headID);
 			//Send Counting Message
 			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCount(), p);
+			s = s.replace("<idfound>", headID+"");
 			p.sendMessage(s);
 			p.playSound(loc, Sound.BLOCK_BEACON_POWER_SELECT, 1f, 2f);
 			

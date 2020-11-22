@@ -3,7 +3,7 @@
     <groupId>tv.tirco.headhunter</groupId>
     <artifactId>HeadHunter</artifactId>
     <!-- Version is used in plugin.yml -->
-    <version>1.0</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
     <!-- Plugin Information -->
@@ -16,7 +16,7 @@
         <license>
             <name>Zlib License</name>
             <url>http://opensource.org/licenses/Zlib</url>
-            <comments>Copyright (c) 2014 Shaila Gray
+            <comments>Copyright (c) 2020 Tirco
             This software is provided 'as-is', without any express or implied
             warranty. In no event will the authors be held liable for any damages
             arising from the use of this software.
@@ -104,8 +104,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

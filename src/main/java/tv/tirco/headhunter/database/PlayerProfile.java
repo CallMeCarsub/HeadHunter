@@ -27,6 +27,8 @@ public class PlayerProfile {
 		this.setFound(found);
 		this.setLoaded(true);
 		this.foundAmount = foundAmount;
+		this.loaded = true;
+		this.changed = true; //Changed so we get an updated last login.
 		
 		//New user, no "found" file.
 		if(this.found == null) {
@@ -35,40 +37,41 @@ public class PlayerProfile {
 		validateHeads();
 	}
 	
-	public PlayerProfile(String playerName) {
-		this(playerName, null);
-		//New user, no "found" file.
-		if(this.found == null) {
-			this.found = new HashMap<Integer,Boolean>();
-		}
-		//Update found amount.
-		getAmountFound();
-		
-
-	}
-
-	public PlayerProfile(String playerName, UUID uuid) {
+//	public PlayerProfile(String playerName) {
+//		this(playerName, null);
+//		//New user, no "found" file.
+//		if(this.found == null) {
+//			this.found = new HashMap<Integer,Boolean>();
+//		}
+//		//Update found amount.
+//		getAmountFound();
+//		
+//
+//	}
+//
+//	public PlayerProfile(String playerName, UUID uuid) {
+//		this.uuid = uuid;
+//		this.playerName = playerName;
+//		//New user, no "found" file.
+//		if(this.found == null) {
+//				this.found = new HashMap<Integer,Boolean>();
+//		}
+//		//Update found amount.
+//		getAmountFound();
+//	}
+//
+//	public PlayerProfile(String playerName, boolean isLoaded) {
+//		this(playerName);
+//		this.loaded = isLoaded;
+//		//New user, no "found" file.
+//		if(this.found == null) {
+//			this.found = new HashMap<Integer,Boolean>();
+//		}
+//	}
+//
+	public PlayerProfile(String playerName, UUID uuid, boolean isLoaded) {
 		this.uuid = uuid;
 		this.playerName = playerName;
-		//New user, no "found" file.
-		if(this.found == null) {
-				this.found = new HashMap<Integer,Boolean>();
-		}
-		//Update found amount.
-		getAmountFound();
-	}
-
-	public PlayerProfile(String playerName, boolean isLoaded) {
-		this(playerName);
-		this.loaded = isLoaded;
-		//New user, no "found" file.
-		if(this.found == null) {
-			this.found = new HashMap<Integer,Boolean>();
-		}
-	}
-
-	public PlayerProfile(String playerName, UUID uuid, boolean isLoaded) {
-		this(playerName, uuid);
 		this.loaded = isLoaded;
 		//New user, no "found" file.
 		if(this.found == null) {
@@ -80,16 +83,13 @@ public class PlayerProfile {
 
 
 	public void save() {
-		if ((!changed && (foundAmount > 0)) || !loaded) {
+		if ((!changed || !loaded)) {
+			MessageHandler.getInstance().debug("Not saving profile for " + playerName + ". Loaded: " + loaded + " Changed:" + changed);
 			return;
 		}
 		
-//		//Do not save the user if they haven't found any skulls!
-//		if(getAmountFound() < 1) {
-//			return;
-//		}
 		
-		MessageHandler.getInstance().log("Saving PlayerProfile of player " + playerName + " ...");
+		MessageHandler.getInstance().debug("Saving PlayerProfile of player " + playerName + " ...");
 		PlayerProfile profileCopy = new PlayerProfile(playerName, uuid, found, foundAmount);
 		changed = !HeadHunter.db.saveUser(profileCopy);
 

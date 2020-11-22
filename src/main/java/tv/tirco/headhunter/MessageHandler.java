@@ -73,6 +73,13 @@ public class MessageHandler {
 	 */
 	public void log(String msg) {
 		Bukkit.getLogger().log(Level.INFO, prefix + msg);
+		if(debugToAdmins) {
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				if(p.hasPermission("headhunter.admin")) {
+					p.sendMessage(prefix + msg);
+				}
+			}
+		}
 	}
 
 	

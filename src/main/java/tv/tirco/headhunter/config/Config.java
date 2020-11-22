@@ -100,7 +100,7 @@ public class Config extends AutoUpdateConfigLoader {
 	}
 	
 	public String getMessageCount() {
-		return config.getString("messages.countmessage", "&aYou have found &6<found>&a out of &6<max>&a heads.");
+		return config.getString("messages.countmessage", "&aYou have found &6<found>&a out of &6<max>&a heads. This head had ID <idfound>.");
 	}
 	
 	public String getMessageAlreadyFound() {
@@ -115,5 +115,9 @@ public class Config extends AutoUpdateConfigLoader {
 	
 	public int getTopAmount() {
 		return config.getInt("setting.topamountsaved", 10);
+	}
+
+	public String getMessageCountCommand() {
+		return config.getString("messages.countcommandmessage", "&aYou have found &6<found>&a out of &6<max>&a heads.");
 	}
 }

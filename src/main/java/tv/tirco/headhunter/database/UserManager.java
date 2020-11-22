@@ -46,16 +46,17 @@ public class UserManager {
 	}
 
 	/**
-	 * Save all users on this thread
+	 * Save all users on this thread aka. sync
 	 */
 	public static void saveAll() {
 		ImmutableList<Player> onlinePlayers = ImmutableList.copyOf(HeadHunter.plugin.getServer().getOnlinePlayers());
-		// VoidRPG.plugin.debug("Saving players... (" + onlinePlayers.size() + ")" );
+		MessageHandler.getInstance().debug("Saving players... (" + onlinePlayers.size() + ")" );
 
 		for (Player player : onlinePlayers) {
 			try {
 				getPlayer(player).getProfile().save();
 			} catch (Exception e) {
+				MessageHandler.getInstance().log("WARNING: failed to save profile of player" + player.getName());
 			}
 		}
 	}
@@ -115,11 +116,6 @@ public class UserManager {
 
 		return playerCollection;
 	}
-
-	public static void updateOffHandStats(PlayerData pData) {
-
-	}
-
 	
 
 	public static void profileCleanup(String playerName) {
