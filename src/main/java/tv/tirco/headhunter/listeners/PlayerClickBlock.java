@@ -11,6 +11,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
+import net.md_5.bungee.api.ChatColor;
 import tv.tirco.headhunter.Heads;
 import tv.tirco.headhunter.MessageHandler;
 import tv.tirco.headhunter.config.Config;
@@ -61,7 +62,34 @@ public class PlayerClickBlock implements Listener {
 			//Send Counting Message
 			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCount(), p);
 			s = s.replace("<idfound>", headID+"");
+			if(s.contains("<headname>")) { //Move to MessageHandler?
+				String name = "";
+				if(Heads.getInstance().hasName(headID)) {
+					//Grab custom name
+					name = ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getName(headID));
+				} else {
+					//Get ID as name.
+					name = "#" + headID;
+				}
+				s = s.replace("<headname>", name);
+			}
+			
 			p.sendMessage(s);
+			
+			//Run command if allowed and exists
+			if(Config.getInstance().runCommandOnHeadFound() && Heads.getInstance().hasCommand(headID)) {
+				//Parameters %playername% %id% %found%
+				//Replace our parameters.
+				String command = Heads.getInstance().getCommand(headID);
+				command = command.replace("<playername>", p.getName());
+				command = command.replace("<id>", headID+"");
+				command = command.replace("<found>", pData.getAmountFound()+"");
+				
+				//Run our command
+				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+			}
+			
+			//Sound
 			p.playSound(loc, Sound.BLOCK_BEACON_POWER_SELECT, 1f, 2f);
 			
 			//Player has found all!

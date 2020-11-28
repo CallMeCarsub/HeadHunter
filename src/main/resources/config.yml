@@ -33,6 +33,11 @@ setting:
 ##How many players should our top list store? -- Stored in Heads.yml
 ##
     topamountsaved: 20
+    
+##Should we run commands when heads are found (if a command is set?
+##These commands are run from console.
+    commandOnHeadFound: true
+
 ############
 ##Messages##
 ############
@@ -45,8 +50,8 @@ messages:
     announcefindingallmessage: "&6<playername>&f has found all &c<max>&f heads!"
 
 ##What should we tell a player that is hunting for heads?
-##<found>, <max>, <playername>, <idfound>
-    countmessage: "&aYou have found &6<found>&a out of &6<max>&a heads. This head had ID <idfound>."
+##<found>, <max>, <playername>, <idfound>, <headname>
+    countmessage: "&aYou just found &f<headname>&a. In total you have found &6<found>&f/<max> &aheads."
     countcommandmessage: "&aYou have found &6<found>&a out of &6<max>&a heads."
     
 ##What should we tell a player that already found a head?

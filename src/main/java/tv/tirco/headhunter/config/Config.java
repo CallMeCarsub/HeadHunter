@@ -80,6 +80,10 @@ public class Config extends AutoUpdateConfigLoader {
 	public boolean getUseParticles() {
 		return config.getBoolean("setting.particles", true);
 	}
+	
+	public boolean runCommandOnHeadFound() {
+		return config.getBoolean("setting.commandOnHeadFound", true);
+	}
 
 	/* Database Purging */
 	public int getOldUsersCutoff() { //How long in months we should wait before we remove a user.

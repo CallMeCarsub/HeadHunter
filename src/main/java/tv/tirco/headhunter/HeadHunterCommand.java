@@ -13,10 +13,6 @@ import org.bukkit.util.StringUtil;
 import com.google.common.collect.ImmutableList;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import tv.tirco.headhunter.config.Config;
 import tv.tirco.headhunter.database.PlayerData;
 import tv.tirco.headhunter.database.UserManager;
@@ -50,24 +46,9 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
     			}
     			
     			PlayerData pData = UserManager.getPlayer(player);
-    			
-    			ComponentBuilder message = new ComponentBuilder("");
     			player.sendMessage(ChatColor.GOLD + "-- Here is a list of all heads you can find. --");
-    			player.sendMessage(ChatColor.GOLD + "(" + ChatColor.GREEN + " Found. " + ChatColor.GOLD + "/"+ ChatColor.RED + " Not Found. " + ChatColor.GOLD + ")");
-    			
-    			for(int i : Heads.getInstance().getHeads().keySet() ) {
-    				ChatColor c = ChatColor.RED;
-    				if(pData.hasFound(i)) {
-    					c = ChatColor.GREEN;
-    				}
-    				TextComponent string = new TextComponent("" + c + i + " ");
-    				Text hint = new Text(ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getHint(i)));
-    				string.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hint));
-    				message.append(string);
+    			MessageHandler.getInstance().seeList(pData, player);
 
-    			}
-    			player.spigot().sendMessage(message.create());
-    			player.sendMessage(ChatColor.GOLD + "" +  ChatColor.ITALIC + "Hover a number to see its hint.");
     			return true;
 
     		} else if(args[0].equalsIgnoreCase("top")) {
@@ -84,6 +65,8 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
 
     	return true;
     }
+    
+
     
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {

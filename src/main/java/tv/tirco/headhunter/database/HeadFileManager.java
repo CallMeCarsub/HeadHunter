@@ -45,6 +45,13 @@ public class HeadFileManager {
 			yamlFile.set("heads.id" + i + ".z", heads.get(i).getZ());
 			yamlFile.set("heads.id" + i + ".world", heads.get(i).getWorld().getName());
 			yamlFile.set("heads.id" + i + ".hint", Heads.getInstance().getHint(i));
+			String cmd = Heads.getInstance().getCommand(i);
+			if(!cmd.isEmpty()) {
+				yamlFile.set("heads.id" + i + ".command", cmd);
+			}
+			if(Heads.getInstance().getName(i) != null && !Heads.getInstance().getName(i).isEmpty()) {
+				yamlFile.set("heads.id" + i + ".name", cmd);
+			}
 		}
 		
 		MessageHandler.getInstance().debug(ChatColor.GOLD + " Saving topScores...");
@@ -117,6 +124,18 @@ public class HeadFileManager {
 		        		 Location loc = new Location(worldObject, X, Y, Z);
 		        		 Heads.getInstance().addHead(id,loc,true);
 		        		 Heads.getInstance().setHint(id, hint);
+		        		 
+		        		 //Name
+		        		 String name = yamlFile.getString("heads."+ key +".name");
+		        		 if(name != null && !name.isEmpty()) {
+		        			 Heads.getInstance().setName(id, name, false);
+		        		 }
+		        		 
+		        		 //Command
+		        		 String command = yamlFile.getString("heads."+ key +".command");
+		        		 if(command != null && !command.isEmpty()) {
+		        			 Heads.getInstance().setCommand(id, command);
+		        		 }
 	        		 } catch(Exception ex) {
 	        			 ex.printStackTrace();
 	        		 }

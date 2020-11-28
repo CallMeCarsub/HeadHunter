@@ -37,20 +37,41 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     	Player player = (Player) sender;
     	
     	if(args.length < 1 || args[0].equalsIgnoreCase("help")) {
-			player.sendMessage(prefix + " /hha help");
-			player.sendMessage(prefix + " /hha find <id>");
-			player.sendMessage(prefix + " /hha delete <id>");
-			player.sendMessage(prefix + " /hha sethint <id> <msg>");
-			player.sendMessage(prefix + " /hha add (on/off)");
-			player.sendMessage(prefix + " /hha debug (on/off)");
-			player.sendMessage(prefix + " /hha notifyadmins (on/off)");
-			player.sendMessage(prefix + " /hha forcesfave");
+			player.sendMessage(prefix + " /hha help" + ChatColor.WHITE + " - this.");
+			player.sendMessage(prefix + " /hha find <id>" + ChatColor.WHITE + " - get head location.");
+			player.sendMessage(prefix + " /hha delete <id>"+ ChatColor.WHITE + " - delete head.");
+			player.sendMessage(prefix + " /hha sethint <id> <msg>"+ ChatColor.WHITE + " - set hint.");
+			player.sendMessage(prefix + " /hha add (on/off)" + ChatColor.WHITE + " - toggle addmode.");
+			player.sendMessage(prefix + " /hha debug (on/off)" + ChatColor.WHITE + " - toggle debug.");
+			player.sendMessage(prefix + " /hha notifyadmins (on/off)" + ChatColor.WHITE + " - toggle debug in chat.");
+			player.sendMessage(prefix + " /hha forcesfave (heads/users)"+ ChatColor.WHITE + " - forcesave file");
+			player.sendMessage(prefix + " /hha findforuser <name>" + ChatColor.WHITE + " - set head as found.");
+			player.sendMessage(prefix + " /hha seelistas <name>" + ChatColor.WHITE + " - see heads they have.");
         	return true;
     	} 
+    	
+  //ForceSave
     	if(args[0].equalsIgnoreCase("forcesave")) {
+    		if(args.length > 1) {
+    			if(args[1].equalsIgnoreCase("config") || args[1].equalsIgnoreCase("heads")) {
+    	        	player.sendMessage(prefix + " Saving config!");
+    	        	Heads.getInstance().saveHeads();
+    	        	return true;
+    			} else if(args[1].equalsIgnoreCase("users")) {
+    				player.sendMessage(prefix + " Saving users!");
+    	        	UserManager.saveAll();
+    	        	return true;
+    			}
+    		}
         	player.sendMessage(prefix + " Saving config!");
         	Heads.getInstance().saveHeads();
+        	player.sendMessage(prefix + " Saving users!");
+        	UserManager.saveAll();
         	return true;
+        	
+        	
+        	
+        	
     	} else if(args[0].equalsIgnoreCase("add")){ //toggle on/off
     		if(!UserManager.hasPlayerDataKey(player)) {
     			player.sendMessage(prefix + " Could not perform this action at this time.");
@@ -73,6 +94,10 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		}
     		return true;
     		
+    		
+    		
+    		
+    		
     	} else if(args[0].equalsIgnoreCase("debug")){ //toggle on/off
     		
     		boolean state = !MessageHandler.getInstance().getDebugState();
@@ -87,6 +112,10 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		player.sendMessage(prefix + " Debug has now been set to " + (state ? ChatColor.GREEN : ChatColor.RED) + state);
     		return true;
     		
+    		
+    		
+    		
+    		
     	} else if(args[0].equalsIgnoreCase("notifyadmins")){ //toggle on/off
     	
     		boolean state = !MessageHandler.getInstance().getDebugToAdminState();
@@ -100,6 +129,11 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		MessageHandler.getInstance().setDebugToAdminState(state);
     		player.sendMessage(prefix + " AdminNotifications has now been set to " + (state ? ChatColor.GREEN : ChatColor.RED) + state);
     		return true;
+    		
+    		
+    		
+    		
+    		
     	} else if(args[0].equals("findforuser")) {
     		//hha findforuser name id
     		if(args.length < 3) {
@@ -129,7 +163,33 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
         	tData.find(id);
         	player.sendMessage(prefix + " The head " + args[2] + " has been unlocked for player " + playerName);
         	return true;
+        	
+        	
+        	
+        	
+    	} else if(args[0].equals("seelistas")) {
+    		//hha findforuser name id
+    		if(args.length < 2) {
+    			player.sendMessage(prefix + " /hha seelistas name");
+    			return true;
+    		}
+    		String playerName = args[1];
+
+        	Player target = Bukkit.getPlayerExact(playerName);
+        	if(target == null) {
+        		player.sendMessage(prefix +"The specified player "+ playerName + " could not be found.");
+        		return true;
+        	}
+        	if(!UserManager.hasPlayerDataKey(target)) {
+        		player.sendMessage(prefix +"The specified player "+ playerName + " is not currently loaded.");
+        		return true;
+        	}
+        	PlayerData tData = UserManager.getPlayer(target);
+    		player.sendMessage(ChatColor.GOLD + "-- Here is a list of all heads "+ playerName + " can find. --");
+        	MessageHandler.getInstance().seeList(tData, player);
+        	return true;
     	}
+    	
     	
     	if(args.length < 2) {
     		player.sendMessage(prefix + " Please specify the ID of the head you want to edit.");
@@ -187,7 +247,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","setfound");
+		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas");
 		switch (args.length) {
 		case 1:
 			return StringUtil.copyPartialMatches(args[0], commands, new ArrayList<String>(commands.size()));

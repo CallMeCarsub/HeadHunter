@@ -6,6 +6,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import tv.tirco.headhunter.database.PlayerData;
 import tv.tirco.headhunter.database.UserManager;
 
@@ -98,6 +102,42 @@ public class MessageHandler {
 	public boolean getDebugToAdminState() {
 		return this.debugToAdmins;
 	}
+
+    
+	public void seeList(PlayerData pData, Player player) {
+		seeList(pData, player, false);
+	}
+	
+	/**
+	 * Displays a list of found heads, with hints to a specified player.
+	 * @param pData The PlayerData to see the information from.
+	 * @param player The player that should see the information.
+	 */
+    public void seeList(PlayerData pData, Player player, Boolean asIDs) {
+		ComponentBuilder message = new ComponentBuilder("");
+		player.sendMessage(ChatColor.GOLD + "(" + ChatColor.GREEN + " Found. " + ChatColor.GOLD + "/"+ ChatColor.RED + " Not Found. " + ChatColor.GOLD + ")");
+		
+		for(int i : Heads.getInstance().getHeads().keySet() ) {
+			ChatColor c = (pData.hasFound(i) ? c = ChatColor.GREEN : ChatColor.RED);
+			
+			String name = "";
+			if(!asIDs && Heads.getInstance().hasName(i)) {
+				//Grab custom name
+				name = c + ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getName(i));
+			} else {
+				//Get ID as name.
+				name = c + "" + i;
+			}
+			
+			TextComponent string = new TextComponent(name);
+			Text hint = new Text(ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getHint(i)));
+			string.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hint));
+			message.append(string);
+
+		}
+		player.spigot().sendMessage(message.create());
+		player.sendMessage(ChatColor.GOLD + "" +  ChatColor.ITALIC + "Hover a number to see its hint.");
+    }
 
 
 
