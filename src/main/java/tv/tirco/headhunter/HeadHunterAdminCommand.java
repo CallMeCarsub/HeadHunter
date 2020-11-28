@@ -39,15 +39,19 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     	if(args.length < 1 || args[0].equalsIgnoreCase("help")) {
 			player.sendMessage(prefix + " /hha help" + ChatColor.WHITE + " - this.");
 			player.sendMessage(prefix + " /hha find <id>" + ChatColor.WHITE + " - get head location.");
-			player.sendMessage(prefix + " /hha delete <id>"+ ChatColor.WHITE + " - delete head.");
-			player.sendMessage(prefix + " /hha sethint <id> <msg>"+ ChatColor.WHITE + " - set hint.");
+			player.sendMessage(prefix + " /hha findforuser <name>" + ChatColor.WHITE + " - set head as found.");
+			player.sendMessage(prefix + " /hha seelistas <name> (true/false)" + ChatColor.WHITE + " - see heads they have. If true is set, it will display the list with numbers instead of the head names.");
+			player.sendMessage("");
 			player.sendMessage(prefix + " /hha add (on/off)" + ChatColor.WHITE + " - toggle addmode.");
+			player.sendMessage(prefix + " /hha sethint <id> <msg>"+ ChatColor.WHITE + " - set hint.");
+			player.sendMessage(prefix + " /hha setname <id> <name>"+ ChatColor.WHITE + " - set name.");
+			player.sendMessage(prefix + " /hha setcommand <id> <cmd>"+ ChatColor.WHITE + " - set command.");
+			player.sendMessage(prefix + " /hha delete <id>"+ ChatColor.WHITE + " - delete head.");
+			player.sendMessage("");
 			player.sendMessage(prefix + " /hha debug (on/off)" + ChatColor.WHITE + " - toggle debug.");
 			player.sendMessage(prefix + " /hha notifyadmins (on/off)" + ChatColor.WHITE + " - toggle debug in chat.");
 			player.sendMessage(prefix + " /hha forcesfave (heads/users)"+ ChatColor.WHITE + " - forcesave file");
-			player.sendMessage(prefix + " /hha findforuser <name>" + ChatColor.WHITE + " - set head as found.");
-			player.sendMessage(prefix + " /hha seelistas <name>" + ChatColor.WHITE + " - see heads they have.");
-        	return true;
+			return true;
     	} 
     	
   //ForceSave
@@ -238,8 +242,34 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		player.sendMessage(ChatColor.GREEN + "Head " + id + " now has its hint set as:");
     		player.sendMessage(ChatColor.translateAlternateColorCodes('&', hint));
     		return true;
-    	} else if(args[0].equals("setname")) {
     		
+    		
+    	} else if(args[0].equals("setname")) {
+    		StringBuilder sb = new StringBuilder("");
+    		for (int i = 2; i < args.length; i++) {
+    		    sb.append(args[i]).append(' ');
+    		}
+    		String name = sb.toString().substring(0, sb.toString().length() - 1);
+    		if(Heads.getInstance().setName(id,name,true)) {
+        		player.sendMessage(ChatColor.GREEN + "Head " + id + " now has its name set as:");
+        		player.sendMessage(ChatColor.translateAlternateColorCodes('&', name));
+    		} else {
+    			player.sendMessage(ChatColor.RED + "A head with the name " + name + " already exists.");
+    		}
+    		return true;
+    		
+    		
+    	} else if(args[0].equals("setcommand")) {
+    		StringBuilder sb = new StringBuilder("");
+    		for (int i = 2; i < args.length; i++) {
+    		    sb.append(args[i]).append(' ');
+    		}
+    		String command = sb.toString().substring(0, sb.toString().length() - 1);
+    		Heads.getInstance().setCommand(id,command);
+    		player.sendMessage(ChatColor.GREEN + "Head " + id + " now has its command set as:");
+    		player.sendMessage(command);
+    		
+    		return true;
     	}
     	
         return true;
@@ -247,7 +277,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas");
+		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas","setname","setcommand");
 		switch (args.length) {
 		case 1:
 			return StringUtil.copyPartialMatches(args[0], commands, new ArrayList<String>(commands.size()));
