@@ -283,6 +283,7 @@ public class Heads {
 			s = "No hint available.";
 		}
 		hints.put(i, s);
+		setChanged(true);
 	}
 	
 	/*
@@ -299,10 +300,12 @@ public class Heads {
 		if(s == null || s.isEmpty()) {
 			if(commands.containsKey(i)) {
 				commands.remove(i);
+				setChanged(true);
 			}
 			return;
 		}
 		commands.put(i, s);
+		setChanged(true);
 	}
 	
 	/**
@@ -332,6 +335,7 @@ public class Heads {
 	public void deleteHead(int id) {
 		if(heads.containsKey(id)) {
 			heads.remove(id);
+			setChanged(true);
 		}
 		if(headNames.containsKey(id)) {
 			headNames.remove(id);
@@ -365,7 +369,7 @@ public class Heads {
 		if(headNames.containsKey(i)) {
 			return headNames.get(i);
 		} else {
-			return null;
+			return "";
 		}
 	}
 	
@@ -383,6 +387,7 @@ public class Heads {
 			return false;
 		} 
 		headNames.put(id, name);
+		setChanged(true);
 		return true;
 	}
 	

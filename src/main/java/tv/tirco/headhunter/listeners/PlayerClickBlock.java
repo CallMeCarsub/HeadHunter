@@ -82,6 +82,7 @@ public class PlayerClickBlock implements Listener {
 				//Replace our parameters.
 				String command = Heads.getInstance().getCommand(headID);
 				command = command.replace("<playername>", p.getName());
+				command = command.replace("<player>", p.getName());
 				command = command.replace("<id>", headID+"");
 				command = command.replace("<found>", pData.getAmountFound()+"");
 				
