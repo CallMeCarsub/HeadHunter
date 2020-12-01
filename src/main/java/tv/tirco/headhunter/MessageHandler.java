@@ -118,7 +118,7 @@ public class MessageHandler {
 		
 		if(asIDs) {
 			for(int i : Heads.getInstance().getHeads().keySet() ) {
-				ChatColor c = (pData.hasFound(i) ? c = ChatColor.GREEN : ChatColor.RED);
+				String c = (pData.hasFound(i) ? c = (ChatColor.GREEN + "" + ChatColor.STRIKETHROUGH) : (ChatColor.RED + ""));
 				
 				String name = c + "[" + i + "] ";
 
@@ -144,18 +144,25 @@ public class MessageHandler {
 				if(current < min) {
 					current++;
 					continue;
-				} else if(current > max) {
+				} else if(current >= max) {
 					break;
 				}
 				current ++;
 				
-				ChatColor c = (pData.hasFound(i) ? c = ChatColor.GREEN : ChatColor.RED);
+				String c = (pData.hasFound(i) ? c = (ChatColor.GREEN + "" + ChatColor.STRIKETHROUGH) : (ChatColor.RED + "" ));
 				
 				String name = "";
 				if(Heads.getInstance().hasName(i)) {
-					name = c + "[" +ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getName(i) + c + "] ");
+					if(pData.hasFound(i)) {
+						name = c + "[" +ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getName(i))) + "]"+ ChatColor.RESET + " ";
+						
+						
+					} else {
+						name = c + "[" +ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getName(i) + c + "] ");
+					}
+					
 				} else {
-					name = c + "[" + i + "] ";
+					name = c + "[" + i + "]" + ChatColor.RESET + " ";
 				}
 				
 				wordCount ++;
@@ -176,37 +183,37 @@ public class MessageHandler {
 		player.spigot().sendMessage(message.create());
 		player.sendMessage(ChatColor.GOLD + "" +  ChatColor.ITALIC + "Hover a number to see its hint.");
 		if(page != 0 && !asIDs) {
-			// --- <<< Page x >>> ---
+			TextComponent dash = new TextComponent(ChatColor.GOLD + " --- ");
+			TextComponent prev = new TextComponent(" <<< ");
+			TextComponent pageNumber = new TextComponent(ChatColor.AQUA +" Page " + page);
+			TextComponent next = new TextComponent(" >>> ");
+			
+			//Prev button
+			String command = "";
+			String targetName = pData.getPlayer().getName();
+			if(player.getName().equalsIgnoreCase(targetName)) {
+				command = "/hh list ";
+			} else {
+				command = "/hha seelistas " + targetName + " ";
+			}
+			if(page > 1) {
+				prev.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command + (page-1)) );
+				prev.setColor(ChatColor.GOLD);
+			} else {
+				prev.setColor(ChatColor.DARK_GRAY);
+			}
+			
+			//Next button
+			if((page) * headsPrPage < Heads.getInstance().getHeadAmount()) {
+				next.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command + (page+1)) );
+				next.setColor(ChatColor.GOLD);
+			} else {
+				next.setColor(ChatColor.DARK_GRAY);
+			}
+			
+			player.spigot().sendMessage(new ComponentBuilder("").append(dash).append(prev).append(pageNumber).append(next).append(dash).create());
 		}
-		TextComponent dash = new TextComponent(ChatColor.GOLD + " --- ");
-		TextComponent prev = new TextComponent(" <<< ");
-		TextComponent pageNumber = new TextComponent(ChatColor.AQUA +" Page " + page);
-		TextComponent next = new TextComponent(" >>> ");
 		
-		//Prev button
-		String command = "";
-		String targetName = pData.getPlayer().getName();
-		if(player.getName().equalsIgnoreCase(targetName)) {
-			command = "hh list ";
-		} else {
-			command = "/hha seelistas " + targetName + " ";
-		}
-		if(page > 1) {
-			prev.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command + (page-1)) );
-			prev.setColor(ChatColor.GOLD);
-		} else {
-			prev.setColor(ChatColor.DARK_GRAY);
-		}
-		
-		//Next button
-		if(page < Heads.getInstance().getHeadAmount() / headsPrPage) {
-			next.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command + (page+1)) );
-			next.setColor(ChatColor.GOLD);
-		} else {
-			next.setColor(ChatColor.DARK_GRAY);
-		}
-		
-		player.spigot().sendMessage(new ComponentBuilder("").append(dash).append(prev).append(pageNumber).append(next).append(dash).create());
     }
 
 

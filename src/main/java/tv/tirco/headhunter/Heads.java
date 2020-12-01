@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import net.md_5.bungee.api.ChatColor;
 import tv.tirco.headhunter.config.Config;
 import tv.tirco.headhunter.database.HeadFileManager;
 
@@ -269,13 +270,20 @@ public class Heads {
 	 */
 	
 	public String getHint(Integer i) {
+		String name = "No name";
+		if(hasName(i)) {
+			name = getName(i);
+		}
+
+		String defaultHint = ChatColor.GREEN + "Name: " + ChatColor.translateAlternateColorCodes('&', name)
+		+ " " + ChatColor.GREEN + "ID: " + ChatColor.GOLD + i + "." + ChatColor.RESET + "\n";
 		if(hints.containsKey(i)) {
 			String hint = hints.get(i);
 			if(hint != null) {
-				return hints.get(i);
+				return defaultHint + hints.get(i);
 			}
 		}
-		return "No hint available.";
+		return defaultHint + "No hint available.";
 	}
 		
 	public void setHint(int i, String s) {
