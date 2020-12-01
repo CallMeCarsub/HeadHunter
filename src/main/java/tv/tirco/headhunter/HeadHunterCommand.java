@@ -47,7 +47,38 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
     			
     			PlayerData pData = UserManager.getPlayer(player);
     			player.sendMessage(ChatColor.GOLD + "-- Here is a list of all heads you can find. --");
-    			MessageHandler.getInstance().seeList(pData, player);
+        		Boolean asIDs = false;
+        		int page = 0;
+        		
+        		//Parse if arg 2 or 3 is either "true" or a number.
+        		if(args.length >= 2) {
+        			if(args[1].equalsIgnoreCase("true")) {
+        				asIDs = true;
+        			} else {
+        				try {
+        					page = Integer.parseInt(args[1]);
+        					
+        				} catch(NumberFormatException ex) {
+        					
+        				}
+        			}
+        			if(args.length >= 3) {
+        				if(args[2].equalsIgnoreCase("true")) {
+        					asIDs = true;
+        				} else if(page != 0) {
+            				try {
+            					page = Integer.parseInt(args[2]);
+            					
+            				} catch(NumberFormatException ex) {
+            					
+            				}
+        				}
+        			}
+        		}
+        		if(!asIDs && page == 0) {
+        			page = 1;
+        		}
+            	MessageHandler.getInstance().seeList(pData, player, asIDs, page);
 
     			return true;
 

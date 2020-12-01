@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableList;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ClickEvent.Action;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -29,54 +30,40 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-    	if(!(sender instanceof Player)) {
-    		sender.sendMessage("This command can only be used by players.");
-    		return true;
-    	}
-    	
-    	Player player = (Player) sender;
-    	
     	if(args.length < 1 || args[0].equalsIgnoreCase("help")) {
-			player.sendMessage(prefix + " /hha help" + ChatColor.WHITE + " - this.");
-			player.sendMessage(prefix + " /hha find <id>" + ChatColor.WHITE + " - get head location.");
-			player.sendMessage(prefix + " /hha findforuser <name>" + ChatColor.WHITE + " - set head as found.");
-			player.sendMessage(prefix + " /hha seelistas <name> (true/false)" + ChatColor.WHITE + " - see heads they have. If true is set, it will display the list with numbers instead of the head names.");
-			player.sendMessage("");
-			player.sendMessage(prefix + " /hha add (on/off)" + ChatColor.WHITE + " - toggle addmode.");
-			player.sendMessage(prefix + " /hha sethint <id> <msg>"+ ChatColor.WHITE + " - set hint.");
-			player.sendMessage(prefix + " /hha setname <id> <name>"+ ChatColor.WHITE + " - set name.");
-			player.sendMessage(prefix + " /hha setcommand <id> <cmd>"+ ChatColor.WHITE + " - set command.");
-			player.sendMessage(prefix + " /hha delete <id>"+ ChatColor.WHITE + " - delete head.");
-			player.sendMessage("");
-			player.sendMessage(prefix + " /hha debug (on/off)" + ChatColor.WHITE + " - toggle debug.");
-			player.sendMessage(prefix + " /hha notifyadmins (on/off)" + ChatColor.WHITE + " - toggle debug in chat.");
-			player.sendMessage(prefix + " /hha forcesfave (heads/users)"+ ChatColor.WHITE + " - forcesave file");
-			return true;
+			return helpCommand(sender);
     	} 
     	
   //ForceSave
     	if(args[0].equalsIgnoreCase("forcesave")) {
     		if(args.length > 1) {
     			if(args[1].equalsIgnoreCase("config") || args[1].equalsIgnoreCase("heads")) {
-    	        	player.sendMessage(prefix + " Saving config!");
+    	        	sender.sendMessage(prefix + " Saving config!");
     	        	Heads.getInstance().saveHeads();
     	        	return true;
     			} else if(args[1].equalsIgnoreCase("users")) {
-    				player.sendMessage(prefix + " Saving users!");
+    				sender.sendMessage(prefix + " Saving users!");
     	        	UserManager.saveAll();
     	        	return true;
     			}
     		}
-        	player.sendMessage(prefix + " Saving config!");
+        	sender.sendMessage(prefix + " Saving config!");
         	Heads.getInstance().saveHeads();
-        	player.sendMessage(prefix + " Saving users!");
+        	sender.sendMessage(prefix + " Saving users!");
         	UserManager.saveAll();
         	return true;
         	
         	
         	
-        	
+        	//PLAYER ONLY
     	} else if(args[0].equalsIgnoreCase("add")){ //toggle on/off
+    		if(!(sender instanceof Player)) {
+    			sender.sendMessage(prefix + " the argument add can only be used by players.");
+    			sender.sendMessage(ChatColor.WHITE + "Use the command"+ChatColor.GOLD + 
+    					" /hha help " + ChatColor.WHITE + "for a list of available commands.");
+    			return true;
+    		}
+    		Player player = (Player) sender;
     		if(!UserManager.hasPlayerDataKey(player)) {
     			player.sendMessage(prefix + " Could not perform this action at this time.");
     			return true;
@@ -113,7 +100,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     			}
     		}
     		MessageHandler.getInstance().setDebugState(state);
-    		player.sendMessage(prefix + " Debug has now been set to " + (state ? ChatColor.GREEN : ChatColor.RED) + state);
+    		sender.sendMessage(prefix + " Debug has now been set to " + (state ? ChatColor.GREEN : ChatColor.RED) + state);
     		return true;
     		
     		
@@ -131,7 +118,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     			}
     		}
     		MessageHandler.getInstance().setDebugToAdminState(state);
-    		player.sendMessage(prefix + " AdminNotifications has now been set to " + (state ? ChatColor.GREEN : ChatColor.RED) + state);
+    		sender.sendMessage(prefix + " AdminNotifications has now been set to " + (state ? ChatColor.GREEN : ChatColor.RED) + state);
     		return true;
     		
     		
@@ -141,40 +128,47 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     	} else if(args[0].equals("findforuser")) {
     		//hha findforuser name id
     		if(args.length < 3) {
-    			player.sendMessage(prefix + " /hha findforuser name id");
+    			sender.sendMessage(prefix + " /hha findforuser name id");
     			return true;
     		}
     		String playerName = args[1];
-    		int id = 0;
-        	try {
-        		id = Integer.parseInt(args[2]);
-        	} catch(NumberFormatException ex) {
-        		player.sendMessage(prefix + " Could not parse " + args[2] + " to a number.");
-        		player.sendMessage(prefix + " /hha findforuser name id");
-        		return false;
+    		
+    		
+        	int id = getHeadID(args[2]);
+        	if(id == -1) {
+        		sender.sendMessage(prefix + " Could not parse " + args[2] + " to a number or a headname.");
+        		sender.sendMessage(prefix + " Keep in mind that some heads have colorcodes.");
+        		return true;
         	}
         	
         	Player target = Bukkit.getPlayerExact(playerName);
         	if(target == null) {
-        		player.sendMessage(prefix +"The specified player "+ playerName + " could not be found.");
+        		sender.sendMessage(prefix +"The specified player "+ playerName + " could not be found.");
         		return true;
         	}
         	if(!UserManager.hasPlayerDataKey(target)) {
-        		player.sendMessage(prefix +"The specified player "+ playerName + " is not currently loaded.");
+        		sender.sendMessage(prefix +"The specified player "+ playerName + " is not currently loaded.");
         		return true;
         	}
         	PlayerData tData = UserManager.getPlayer(target);
         	tData.find(id);
-        	player.sendMessage(prefix + " The head " + args[2] + " has been unlocked for player " + playerName);
+        	sender.sendMessage(prefix + " The head " + args[2] + " has been unlocked for player " + playerName);
         	return true;
         	
         	
         	
-        	
+        	//PLAYER ONLY
     	} else if(args[0].equals("seelistas")) {
+    		if(!(sender instanceof Player)) {
+    			sender.sendMessage(prefix + " the argument seelistas can only be used by players.");
+    			sender.sendMessage(ChatColor.WHITE + "Use the command"+ChatColor.GOLD + 
+    					" /hha help " + ChatColor.WHITE + "for a list of available commands.");
+    			return true;
+    		}
+    		Player player = (Player) sender;
     		//hha findforuser name id
     		if(args.length < 2) {
-    			player.sendMessage(prefix + " /hha seelistas name");
+    			sender.sendMessage(prefix + " /hha seelistas name");
     			return true;
     		}
     		String playerName = args[1];
@@ -190,26 +184,55 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
         	}
         	PlayerData tData = UserManager.getPlayer(target);
     		player.sendMessage(ChatColor.GOLD + "-- Here is a list of all heads "+ playerName + " can find. --");
-        	MessageHandler.getInstance().seeList(tData, player);
+    		
+    		Boolean asIDs = false;
+    		int page = 0;
+    		if(args.length >= 3) {
+    			if(args[2].equalsIgnoreCase("true")) {
+    				asIDs = true;
+    			} else {
+    				try {
+    					page = Integer.parseInt(args[2]);
+    					
+    				} catch(NumberFormatException ex) {
+    					
+    				}
+    			}
+    			if(args.length >= 4) {
+    				if(args[3].equalsIgnoreCase("true")) {
+    					asIDs = true;
+    				} else if(page != 0) {
+        				try {
+        					page = Integer.parseInt(args[3]);
+        					
+        				} catch(NumberFormatException ex) {
+        					
+        				}
+    				}
+    			}
+    		}
+    		if(!asIDs && page == 0) {
+    			page = 1;
+    		}
+        	MessageHandler.getInstance().seeList(tData, player, asIDs, page);
         	return true;
     	}
     	
     	
     	if(args.length < 2) {
-    		player.sendMessage(prefix + " Please specify the ID of the head you want to edit.");
+    		sender.sendMessage(prefix + " Please specify the ID of the head you want to edit.");
     		return true;
     	}
-    	int id = 0;
     	
-    	try {
-    		id = Integer.parseInt(args[1]);
-    	} catch(NumberFormatException ex) {
-    		player.sendMessage(prefix + " Could not parse " + args[1] + " to a number.");
-    		return false;
+    	int id = getHeadID(args[1]);
+    	if(id == -1) {
+    		sender.sendMessage(prefix + " Could not parse " + args[1] + " to a number or a headname.");
+    		sender.sendMessage(prefix + " Keep in mind that some heads have colorcodes.");
+    		return true;
     	}
     	
     	if(!Heads.getInstance().headExists(id)) {
-    		player.sendMessage(prefix + " There is no head with ID " + id);
+    		sender.sendMessage(prefix + " There is no head with ID " + id);
     		return true;
     	}
 	
@@ -218,18 +241,27 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		
     		ComponentBuilder message = new ComponentBuilder("");
     		String coords = loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
-			TextComponent string = new TextComponent(prefix + "Head " + id + " is located at " + ChatColor.WHITE + coords);
-			Text hint = new Text("Click for TP command. \n/gamemode spectator is recommended.");
-			string.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hint));
-			string.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + coords));
-			message.append(string);
-			player.spigot().sendMessage(message.create());
-			return true;
+    		String reply = prefix + "Head " + id + " is located at " + ChatColor.WHITE + coords;
+        	if(!(sender instanceof Player)) {
+        		sender.sendMessage(reply);
+        		return true;
+        	} else {	        	
+        		Player player = (Player) sender;
+        	
+        		TextComponent string = new TextComponent(reply);
+        		Text hint = new Text("Click for TP command. \n/gamemode spectator is recommended.");
+        		string.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hint));
+        		string.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + coords));
+        		message.append(string);
+        		player.spigot().sendMessage(message.create());
+        		return true;
+        	}
+
     		
     		
     	} else if(args[0].equalsIgnoreCase("delete")){
     		Heads.getInstance().deleteHead(id);
-    		player.sendMessage(prefix + " Head " + id + " has been removed. Note that this might cause issues.");
+    		sender.sendMessage(prefix + " Head " + id + " has been removed. Note that this might cause issues.");
     		return true;
     		
     	} else if(args[0].equalsIgnoreCase("sethint")){
@@ -239,8 +271,8 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		}
     		String hint = sb.toString().substring(0, sb.toString().length() - 1);
     		Heads.getInstance().setHint(id,hint);
-    		player.sendMessage(ChatColor.GREEN + "Head " + id + " now has its hint set as:");
-    		player.sendMessage(ChatColor.translateAlternateColorCodes('&', hint));
+    		sender.sendMessage(ChatColor.GREEN + "Head " + id + " now has its hint set as:");
+    		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', hint));
     		return true;
     		
     		
@@ -251,10 +283,10 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		}
     		String name = sb.toString().substring(0, sb.toString().length() - 1);
     		if(Heads.getInstance().setName(id,name,true)) {
-        		player.sendMessage(ChatColor.GREEN + "Head " + id + " now has its name set as:");
-        		player.sendMessage(ChatColor.translateAlternateColorCodes('&', name));
+        		sender.sendMessage(ChatColor.GREEN + "Head " + id + " now has its name set as:");
+        		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', name));
     		} else {
-    			player.sendMessage(ChatColor.RED + "A head with the name " + name + " already exists.");
+    			sender.sendMessage(ChatColor.RED + "A head with the name " + name + " already exists.");
     		}
     		return true;
     		
@@ -266,13 +298,155 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		}
     		String command = sb.toString().substring(0, sb.toString().length() - 1);
     		Heads.getInstance().setCommand(id,command);
-    		player.sendMessage(ChatColor.GREEN + "Head " + id + " now has its command set as:");
-    		player.sendMessage(command);
+    		sender.sendMessage(ChatColor.GREEN + "Head " + id + " now has its command set as:");
+    		sender.sendMessage(command);
     		
     		return true;
     	}
     	
         return true;
+    }
+    
+    private int getHeadID(String string) {
+    	int id = -1;
+    	try {
+    		id = Integer.parseInt(string);
+    	} catch(NumberFormatException ex) {
+    		id = Heads.getInstance().getHeadIDFromName(string);
+    	}
+    	
+		return id;
+	}
+
+	private boolean helpCommand(CommandSender sender) {
+    	if(!(sender instanceof Player)) {
+    		sender.sendMessage(prefix + " /hha help" + ChatColor.WHITE + " - this.");
+    		sender.sendMessage(prefix + " /hha find <id>" + ChatColor.WHITE + " - get head location.");
+    		sender.sendMessage(prefix + " /hha findforuser <name> <id>" + ChatColor.WHITE + " - set head as found.");
+    		sender.sendMessage("");
+    		sender.sendMessage(prefix + " /hha sethint <id> <msg>"+ ChatColor.WHITE + " - set hint.");
+    		sender.sendMessage(prefix + " /hha setname <id> <name>"+ ChatColor.WHITE + " - set name.");
+    		sender.sendMessage(prefix + " /hha setcommand <id> <cmd>"+ ChatColor.WHITE + " - set command.");
+    		sender.sendMessage(prefix + " /hha delete <id>"+ ChatColor.WHITE + " - delete head.");
+    		sender.sendMessage("");
+    		sender.sendMessage(prefix + " /hha debug (on/off)" + ChatColor.WHITE + " - toggle debug.");
+    		sender.sendMessage(prefix + " /hha notifyadmins (on/off)" + ChatColor.WHITE + " - toggle debug in chat.");
+    		sender.sendMessage(prefix + " /hha forcesfave (heads/users)"+ ChatColor.WHITE + " - forcesave file");
+    	} else {
+    		Player player = (Player) sender;
+    		
+    		
+    		ComponentBuilder message = new ComponentBuilder("");
+    		//Title
+    		TextComponent title = new TextComponent(prefix + " --- Help ---");
+    		title.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+    				new Text("")));
+    		message.append(title);
+    		TextComponent hoverForExplanation = new TextComponent(ChatColor.GOLD + "\nHover for explanation.\n");
+    		message.append(hoverForExplanation);
+    		
+    		//Help
+    		TextComponent help = new TextComponent(ChatColor.YELLOW + "/hha help\n");
+    		help.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+    				new Text(ChatColor.WHITE + "Shows this screen.")));
+    		message.append(help);
+			
+    		if(true) { //TODO permission check admin.player
+    			message.append(new TextComponent("\n"));
+        		TextComponent findforuser = new TextComponent(ChatColor.YELLOW + "/hha findforuser <playername> <id/name>\n");
+        		findforuser.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Marks the specified head as found for the user.")));
+        		findforuser.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha findforuser"));
+        		message.append(findforuser);
+        		
+        		TextComponent seelistas = new TextComponent(ChatColor.YELLOW + "/hha seelistas <playername> (true/false)\n");
+        		seelistas.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Shows you the list of found heads, as if you were them.\n" +
+        										   "The boolean true/false is to determine if you want\n"
+        										   + "to see head IDs (true) or names (false/unset).")));
+        		seelistas.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha seelistas"));
+        		message.append(seelistas);
+    		}
+    		//Find
+    		if(true) { //TODO permission check admin.heads
+    			message.append(new TextComponent("\n"));
+        		TextComponent find = new TextComponent(ChatColor.YELLOW + "/hha find <id/name>\n");
+        		find.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Gives you the location of the specified head\n" +
+        										   "and a clickable message to teleport to it.")));
+        		find.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha find"));
+        		message.append(find);
+        		
+        		TextComponent add = new TextComponent(ChatColor.YELLOW + "/hha add (on/off)\n");
+        		add.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Toggles addmode. Any head you place will be added\n" +
+        										   "to the hunt. (on = Enabled).")));
+        		add.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha add on"));
+        		message.append(add);
+        		
+        		TextComponent sethint = new TextComponent(ChatColor.YELLOW + "/hha sethint <id/name> <msg>\n");
+        		sethint.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Sets the hint of the specified head to be your msg.\n" +
+        										   "Hints are seen when a player uses /hh list.")));
+        		sethint.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha sethint"));
+        		message.append(sethint);
+        		
+        		TextComponent setname = new TextComponent(ChatColor.YELLOW + "/hha setname <id/name> <msg>\n");
+        		setname.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Sets the name of the specified head to be your msg.\n" +
+        										   "Names are an alternate way of identifying heads.")));
+        		setname.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha setname"));
+        		message.append(setname);
+        		
+        		TextComponent setcommand = new TextComponent(ChatColor.YELLOW + "/hha setcommand <id/name> <msg>\n");
+        		setcommand.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Sets the command of the specified head to be your msg.\n" +
+        										   "The command is run when a player finds the head.\n"
+        										   + "You can use the placeholders:\n"
+        										   + "<player>, <id>, <found>.\n"
+        										   + "Do not include a / at the start of your command.\n"
+        										   + "Leave empty to remove command.")));
+        		setcommand.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha setcommand"));
+        		message.append(setcommand);
+        		
+        		TextComponent delete = new TextComponent(ChatColor.YELLOW + "/hha delete <id/name>\n");
+        		delete.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Deletes the head.\n" +
+        										   "WARNING: Not recommended.")));
+        		delete.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha delete"));
+        		message.append(delete);
+    		}
+    		
+    		if(true) { //TODO permission admin.log
+    			message.append(new TextComponent("\n"));
+        		TextComponent debug = new TextComponent(ChatColor.YELLOW + "/hha debug (on/off)\n");
+        		debug.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Enables/disables debugmessages to the console.\n" +
+        										   "Will be reset upon next reload/reboot")));
+        		debug.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha debug on"));
+        		message.append(debug);
+        		
+        		TextComponent notifyadmins = new TextComponent(ChatColor.YELLOW + "/hha notifyadmins (on/off)\n");
+        		notifyadmins.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Enables/disables debugmessages to all admins in chat.\n" +
+        										   "Will be reset upon next reload/reboot")));
+        		notifyadmins.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha notifyadmins on"));
+        		message.append(notifyadmins);
+        		
+        		TextComponent forcesave = new TextComponent(ChatColor.YELLOW + "/hha forcesave (heads/users)\n");
+        		forcesave.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Saves the specified file.\n" +
+        										   "If no file is specified, both are saved.")));
+        		forcesave.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha forcesave"));
+        		message.append(forcesave);
+    		}
+    		
+    		message.append(title);
+			//Send the message
+			player.spigot().sendMessage(message.create());
+			
+    	}
+    	return true;
     }
     
 	@Override
