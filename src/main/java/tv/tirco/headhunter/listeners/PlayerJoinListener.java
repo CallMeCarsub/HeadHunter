@@ -33,10 +33,11 @@ public class PlayerJoinListener implements Listener {
 			return;
 		}
 
-		new PlayerProfileLoadingTask(player).runTaskLaterAsynchronously(HeadHunter.plugin, 1);
+        //Delay loading for 3 seconds in case the player has a save task running, its hacky but it should do the trick
+        new PlayerProfileLoadingTask(player).runTaskLaterAsynchronously(HeadHunter.plugin, 60);
 	}
 	
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 
@@ -44,8 +45,10 @@ public class PlayerJoinListener implements Listener {
 			return;
 		}
 
+        //There's an issue with using Async saves on player quit
+        //Basically there are conditions in which an async task does not execute fast enough to save the data if the server shutdown shortly after this task was scheduled
 		PlayerData pData = UserManager.getPlayer(player);
-		pData.logout(false);
+		pData.logout(true); //Force saving sync, as we are having weird issues with some players not getting saved.
 	}
 	
     public static boolean isNPCEntity(Entity entity) {

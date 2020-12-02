@@ -45,15 +45,17 @@ public class HeadFileManager {
 			yamlFile.set("heads.id" + i + ".z", heads.get(i).getZ());
 			yamlFile.set("heads.id" + i + ".world", heads.get(i).getWorld().getName());
 			yamlFile.set("heads.id" + i + ".hint", Heads.getInstance().getHint(i));
+			yamlFile.set("heads.id" + i + ".command", Heads.getInstance().getCommand(i));
+			yamlFile.set("heads.id" + i + ".name", Heads.getInstance().getName(i));
 		}
 		
 		MessageHandler.getInstance().debug(ChatColor.GOLD + " Saving topScores...");
 		LinkedHashMap<UUID,Integer> topScores = Heads.getInstance().getSortedTopMap();
 		MessageHandler.getInstance().debug(ChatColor.GOLD + " Retreived scores from heads.java. Looping:");
 		for(UUID uuid : topScores.keySet()) {
-			MessageHandler.getInstance().debug(ChatColor.GOLD + " UUID is " + uuid);
+			//MessageHandler.getInstance().debug(ChatColor.GOLD + " UUID is " + uuid);
 			yamlFile.set("scores." + uuid, topScores.get(uuid));
-			MessageHandler.getInstance().debug(ChatColor.GOLD + " Set path scores."+uuid + " to " + topScores.get(uuid));
+			//MessageHandler.getInstance().debug(ChatColor.GOLD + " Set path scores."+uuid + " to " + topScores.get(uuid));
 		}
 		MessageHandler.getInstance().debug(ChatColor.GOLD + " Loop complete.");
 
@@ -117,6 +119,18 @@ public class HeadFileManager {
 		        		 Location loc = new Location(worldObject, X, Y, Z);
 		        		 Heads.getInstance().addHead(id,loc,true);
 		        		 Heads.getInstance().setHint(id, hint);
+		        		 
+		        		 //Name
+		        		 String name = yamlFile.getString("heads."+ key +".name");
+		        		 if(name != null && !name.isEmpty()) {
+		        			 Heads.getInstance().setName(id, name, false);
+		        		 }
+		        		 
+		        		 //Command
+		        		 String command = yamlFile.getString("heads."+ key +".command");
+		        		 if(command != null && !command.isEmpty()) {
+		        			 Heads.getInstance().setCommand(id, command);
+		        		 }
 	        		 } catch(Exception ex) {
 	        			 ex.printStackTrace();
 	        		 }

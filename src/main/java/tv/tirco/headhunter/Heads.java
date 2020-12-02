@@ -18,16 +18,24 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import net.md_5.bungee.api.ChatColor;
 import tv.tirco.headhunter.config.Config;
 import tv.tirco.headhunter.database.HeadFileManager;
 
 public class Heads {
 	
+	//Data
 	private static Heads instance;
 	private boolean changed;
 	private int nextID;
+	
+	//Head info
 	private HashMap<Integer,String> hints;
 	private HashBiMap<Integer, Location> heads;
+	private HashBiMap<Integer, String> headNames;
+	private HashMap<Integer,String> commands;
+	
+	//Scoreboard
 	private HashMap<UUID,Integer> top;
 	private LinkedHashMap<UUID,Integer> sortedTop;
 	
@@ -42,11 +50,32 @@ public class Heads {
 	public Heads() {
 		heads = HashBiMap.create();
 		hints = new HashMap<Integer,String>();
+		headNames = HashBiMap.create();
+		commands = new HashMap<Integer,String>();
+		
+		
+		
 		top = new HashMap<UUID,Integer>();
 		sortedTop = new LinkedHashMap<UUID,Integer>();
 		this.setChanged(false);
 		this.nextID = 0;
 	}
+	
+	/*
+	 * Misc
+	 */
+
+	public boolean isChanged() {
+		return changed;
+	}
+
+	public void setChanged(boolean changed) {
+		this.changed = changed;
+	}
+	
+	/*
+	 * Scoreboard
+	 */
 	
 	public LinkedHashMap<UUID,Integer> getSortedTopMap(){
 		return this.sortedTop;
@@ -142,6 +171,9 @@ public class Heads {
 	}
 
 
+	/*
+	 * Save & Load
+	 */
 	
 	public void loadFromFile() {
 		HeadFileManager.loadHeads();
@@ -152,14 +184,19 @@ public class Heads {
 		HeadFileManager.saveHeads();
 	}
 	
-	public boolean addHead(Location loc) {
+	/*
+	 * Head Management
+	 */
+	
+	public int addHead(Location loc) {
 		if(heads.containsValue(loc)) {
-			return false;
+			return -1;
 		} else {
 			heads.put(nextID, loc);
 			changed = true;
+			int returnID = nextID;
 			this.nextID +=1;
-			return true;
+			return returnID;
 		}
 	}
 	
@@ -173,6 +210,11 @@ public class Heads {
 		}
 		return true; 
 	}
+	
+	/*
+	 * Head Management
+	 * Location
+	 */
 	
 	public Location getLocFromValues(double x, double y, double z, String worldname) {
 		World world = Bukkit.getWorld(worldname);
@@ -205,14 +247,6 @@ public class Heads {
 		this.heads = heads;
 	}
 
-	public boolean isChanged() {
-		return changed;
-	}
-
-	public void setChanged(boolean changed) {
-		this.changed = changed;
-	}
-
 	public boolean isHead(Location loc) {
 		return heads.containsValue(loc);
 	}
@@ -230,31 +264,152 @@ public class Heads {
 	public boolean headExists(Integer i) {
 		return heads.containsKey(i);
 	}
-
+	
+	/*
+	 * Head Management
+	 * Hints
+	 */
 	
 	public String getHint(Integer i) {
+		String name = "No name";
+		if(hasName(i)) {
+			name = getName(i);
+		}
+
+		String defaultHint = ChatColor.GREEN + "Name: " + ChatColor.translateAlternateColorCodes('&', name)
+		+ " " + ChatColor.GREEN + "ID: " + ChatColor.GOLD + i + "." + ChatColor.RESET + "\n";
 		if(hints.containsKey(i)) {
 			String hint = hints.get(i);
 			if(hint != null) {
-				return hints.get(i);
+				return defaultHint + hints.get(i);
 			}
 		}
-		return "No hint available.";
+		return defaultHint + "No hint available.";
 	}
-	
+		
 	public void setHint(int i, String s) {
 		if(s == null) {
 			s = "No hint available.";
 		}
 		hints.put(i, s);
+		setChanged(true);
+	}
+	
+	/*
+	 * Head Management
+	 * Commands
+	 */
+	
+	/**
+	 * Set a command for the specified head.
+	 * @param i - The ID of the head.
+	 * @param s - The command.
+	 */
+	public void setCommand(int i, String s) {
+		if(s == null || s.isEmpty()) {
+			if(commands.containsKey(i)) {
+				commands.remove(i);
+				setChanged(true);
+			}
+			return;
+		}
+		commands.put(i, s);
+		setChanged(true);
+	}
+	
+	/**
+	 * Get the command linked to a head.
+	 * @param ID of the head you want to get the command of.
+	 * @return the command (as string).
+	 */
+	public String getCommand(int i) {
+		if(commands.containsKey(i)) {
+			String hint = commands.get(i);
+			if(hint != null) {
+				return commands.get(i);
+			}
+		}
+		return "";
+	}
+	
+	public boolean hasCommand(int i) {
+		return commands.containsKey(i);
 	}
 
+	/**
+	 * Clears all information about a head from memory. 
+	 * This will also make it so head is not saved on next save.
+	 * @param id - The ID of the head to remove.
+	 */
 	public void deleteHead(int id) {
 		if(heads.containsKey(id)) {
 			heads.remove(id);
+			setChanged(true);
+		}
+		if(headNames.containsKey(id)) {
+			headNames.remove(id);
+		}
+		if(commands.containsKey(id)) {
+			commands.remove(id);
 		}
 		
 	}
 
+	/*
+	 * Head Management
+	 * Names
+	 */
+	
+	/**
+	 * Get if the head has a name linked to it.
+	 * @param ID of the head
+	 * @return if name is set or not.
+	 */
+	public Boolean hasName(int i) {
+		return headNames.containsKey(i);
+	}
+	
+	/**
+	 * Get the name of the head. (If any)
+	 * @param ID of the head
+	 * @return Name of the head, if any. Null if not.
+	 */
+	public String getName(int i) {
+		if(headNames.containsKey(i)) {
+			return headNames.get(i);
+		} else {
+			return "";
+		}
+	}
+	
+
+	/**
+	 * Oops! Unique names!
+	 * @param id - The ID to set the name for.
+	 * @param name - The name to put.
+	 */
+	public boolean setName(Integer id, String name, boolean fromCommand) {
+		if(headNames.containsValue(name)) {
+			if(!fromCommand) {//Warn console if this was done from config.
+				MessageHandler.getInstance().log("WARNING: Tried to set name of head with ID " + id + " to " + name + ". This is not allowed, as names are unique.");
+			}
+			return false;
+		} 
+		headNames.put(id, name);
+		setChanged(true);
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @param Name of the head. CaseSensitive.
+	 * @return ID of the head.
+	 */
+	public int getHeadIDFromName(String name) {
+		if(headNames.containsValue(name)) {
+			return headNames.inverse().get(name);
+		}
+		return -1;
+	}
 
 }

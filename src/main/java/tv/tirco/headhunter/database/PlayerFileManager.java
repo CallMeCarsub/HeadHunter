@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import tv.tirco.headhunter.HeadHunter;
@@ -21,6 +20,12 @@ import tv.tirco.headhunter.MessageHandler;
 import tv.tirco.headhunter.config.Config;
 
 public class PlayerFileManager implements DatabaseManager {
+	
+	/**
+	 * Based on https://github.com/mcMMO-Dev/mcMMO/blob/dacd846fe76e762f6ecfaeea8bb84a2c89917a43/src/main/java/com/gmail/nossr50/database/FlatfileDatabaseManager.java#L747
+	 * By nossr50
+	 * 
+	 */
 
 	// FLATFILE VERSION
 	//PlayerName 0: UUID 1: LastSeen 2: 3+ -> unlocked 0=0: BREAK:
@@ -32,9 +37,6 @@ public class PlayerFileManager implements DatabaseManager {
 	private static final Object fileWritingLock = new Object();
     public static final int TIME_CONVERSION_FACTOR = 1000;
     public static final int TICK_CONVERSION_FACTOR = 20;
-
-	// private static final long PURGE_TIME = 999999999; //TODO set this to a
-	// reachable time
 
 	@SuppressWarnings("unused")
 	private final long UPDATE_WAIT_TIME = 600000L; // 10 minutes - TODO add autoUpdate?
@@ -129,6 +131,11 @@ public class PlayerFileManager implements DatabaseManager {
 	public void purgeOldUsers() {
 		int removedPlayers = 0;
 		long currentTime = System.currentTimeMillis();
+		
+		Boolean notEnabled = true;
+		if(notEnabled) {
+			return;
+		}
 		
 		if(Config.getInstance().getOldUsersCutoff() == 0) {
 			return;
@@ -259,7 +266,6 @@ public class PlayerFileManager implements DatabaseManager {
 	public boolean saveUser(PlayerProfile profile) {
 		String playerName = profile.getPlayerName();
 		UUID uuid = profile.getUuid();
-		String amountFound = ""+profile.getAmountFound();
 
 		BufferedReader in = null;
 		FileWriter out = null;
@@ -272,6 +278,7 @@ public class PlayerFileManager implements DatabaseManager {
 				StringBuilder writer = new StringBuilder();
 				String line;
 
+				boolean wroteUser = false;
 				while ((line = in.readLine()) != null) {
 					// read the line in and copy it to the output if it's not the player we want to
 					// edit.
@@ -279,29 +286,30 @@ public class PlayerFileManager implements DatabaseManager {
 					if (!(uuid != null && character[UUID_POSITION].equalsIgnoreCase(uuid.toString()))
 							&& !character[PLAYERNAME_POSITION].equalsIgnoreCase(playerName)) {
 						writer.append(line).append("\r\n");
+						//UUID and Name did not match, so write line to file as normal.
 					} else {
+						writeUserToLine(profile, playerName, uuid, writer);
+						wroteUser = true;
 						//Check if player is powerless. If it is, we skip.
-						if(!(profile.getAmountFound() < 1)) {
-							// otherwise write the new player information
-							writer.append(playerName).append(":"); // PlayerName - line 0
-							writer.append(uuid != null ? uuid.toString() : "NULL").append(":"); // UUID - 1
-							writer.append(String.valueOf(System.currentTimeMillis() / TIME_CONVERSION_FACTOR))
-							.append(":"); // LastLogin - 2
-							writer.append(amountFound).append(":");//AMOUNT_FOUND_POSITION - 3
-							
-							//Loop through all possible skulls and save the ones that are true.
-							for(int i : profile.getFound().keySet()) {
-								if(profile.getFound().get(i)) {
-									writer.append(i+"=1").append(":");
-								}
-							}					
-							writer.append("BREAK").append(":");
-							writer.append("\r\n");
-						}
+//						if(!(profile.getAmountFound() < 1)) {
+//							
+//						} else {
+//							MessageHandler.getInstance().debug("Cleared savedata for player " + playerName + " as they have not found any heads.");
+//						}
 						
 					}
 
 				}
+				
+                /*
+                 * If we couldn't find the user in the DB we need to add him
+                 * Extra failsafe after so many first time users just going poof :I
+                 */
+                if(!wroteUser)
+                {
+                    writeUserToLine(profile, playerName, uuid, writer);
+                    MessageHandler.getInstance().debug("Player " + playerName + " was not in the database! This would've resulted in a failed save previously.");
+                }
 
 				// write new file
 				out = new FileWriter(usersFilePath);
@@ -315,18 +323,45 @@ public class PlayerFileManager implements DatabaseManager {
 					try {
 						in.close();
 					} catch (IOException e) {
-						// Ignore
+						MessageHandler.getInstance().debug("IOException when closing line IN");
 					}
 				}
 				if (out != null) {
 					try {
 						out.close();
 					} catch (IOException e) {
-						// Ignore
+						MessageHandler.getInstance().debug("IOException when closing line OUT");
 					}
 				}
 			}
 		}
+	}
+
+	private void writeUserToLine(PlayerProfile profile, String playerName, UUID uuid, StringBuilder writer) {
+		// otherwise write the new player information
+		writer.append(playerName).append(":"); // PlayerName - line 0
+		writer.append(uuid != null ? uuid.toString() : "NULL").append(":"); // UUID - 1
+		writer.append(String.valueOf(System.currentTimeMillis() / TIME_CONVERSION_FACTOR))
+		.append(":"); // LastLogin - 2
+		writer.append(profile.getAmountFound()).append(":");//AMOUNT_FOUND_POSITION - 3
+		
+		//Loop through all skulls and save the ones that are true.
+		int saved = 0;
+		for(int i : profile.getFound().keySet()) {
+			if(profile.getFound().get(i)) {
+				writer.append(i+"=1").append(":");
+				saved++;
+			}
+		}
+		if(saved < 1) {
+			writer.append("0=0:"); //Make sure that saved heads isn't empty!
+			//Allthough... if it is, why would it try to be saved? o.o
+			MessageHandler.getInstance().debug("SaveData for player " + playerName + " was saved with an empty saved-list.");
+		}
+		writer.append("BREAK").append(":");
+		writer.append("\r\n");
+		MessageHandler.getInstance().debug("SaveData for player " + playerName + " is now written to file.");
+		
 	}
 
 	public void newUser(String playerName, UUID uuid) {
@@ -357,14 +392,6 @@ public class PlayerFileManager implements DatabaseManager {
 				}
 			}
 		}
-	}
-
-	public PlayerProfile loadPlayerProfile(String playerName, boolean create) {
-		return loadPlayerProfile(playerName, null, false);
-	}
-
-	public PlayerProfile loadPlayerProfile(UUID uuid) {
-		return loadPlayerProfile("", uuid, false);
 	}
 
 	public PlayerProfile loadPlayerProfile(String playerName, UUID uuid, boolean create) {
@@ -405,11 +432,11 @@ public class PlayerFileManager implements DatabaseManager {
 
 				// Didn't find the player, create a new one
 				if (create) {
-					Bukkit.getConsoleSender().sendMessage("Didn't find player, creating new one...");
+					MessageHandler.getInstance().log("Didn't find player, creating new one...");
 					if (uuid == null) {
-						Bukkit.getConsoleSender().sendMessage("UUID of new player is NULL");
+						MessageHandler.getInstance().log("UUID of new player is NULL");
 						newUser(playerName, uuid);
-						return new PlayerProfile(playerName, true);
+						return new PlayerProfile(playerName, null, false);
 					}
 
 					newUser(playerName, uuid);
@@ -432,10 +459,10 @@ public class PlayerFileManager implements DatabaseManager {
 
 		// Return unloaded profile
 		if (uuid == null) {
-			return new PlayerProfile(playerName);
+			return new PlayerProfile(playerName, null, false);
 		}
 
-		return new PlayerProfile(playerName, uuid);
+		return new PlayerProfile(playerName, uuid, true);
 	}
 
 	private PlayerProfile loadFromLine(String[] character) {
@@ -612,16 +639,18 @@ public class PlayerFileManager implements DatabaseManager {
 		}
 	}
 
-	@Override
+	/**
+	 * 
+	 */
 	public PlayerProfile loadPlayerProfile(String playerName, UUID uuid, boolean create, boolean retry) {
 		// Retry is not used here.
 		return loadPlayerProfile(playerName, uuid, create);
 	}
 
-	@Override
-	public PlayerProfile loadPlayerProfile(UUID uuid, boolean createNew) {
-		return loadPlayerProfile("", uuid, createNew);
-	}
+//	@Override
+//	public PlayerProfile loadPlayerProfile(UUID uuid, boolean createNew) {
+//		return loadPlayerProfile("", uuid, createNew);
+//	}
 
 
 }
