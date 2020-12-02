@@ -55,6 +55,6 @@ messages:
     countcommandmessage: "&aYou have found &6<found>&a out of &6<max>&a heads."
     
 ##What should we tell a player that already found a head?
-##<found>, <max>, <playername>
-    repeatmessage: "&aYou have already found this head."
+##<found>, <max>, <playername>, <idfound>, <headname>
+    repeatmessage: "&aYou have already found this head. &aID: &6<idfound>&a, Name: &6<headname>"
 

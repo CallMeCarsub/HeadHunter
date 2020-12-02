@@ -188,14 +188,15 @@ public class Heads {
 	 * Head Management
 	 */
 	
-	public boolean addHead(Location loc) {
+	public int addHead(Location loc) {
 		if(heads.containsValue(loc)) {
-			return false;
+			return -1;
 		} else {
 			heads.put(nextID, loc);
 			changed = true;
+			int returnID = nextID;
 			this.nextID +=1;
-			return true;
+			return returnID;
 		}
 	}
 	

@@ -51,6 +51,16 @@ public class MessageHandler {
 		
 	}
 	
+	public String translateTags(String s, Player p, int ID) {
+		s = s.replace("<idfound>", ID+"");
+		String name = "No name.";
+		if(Heads.getInstance().hasName(ID)) {
+			name = Heads.getInstance().getName(ID);
+		}
+		s = s.replace("<headname>", name);
+		return translateTags(s,p);
+	}
+	
 	public String translateTags(String s, Player p) {
 		String foundSkulls = "?";
 		if(!UserManager.hasPlayerDataKey(p)) {
@@ -120,7 +130,7 @@ public class MessageHandler {
 			for(int i : Heads.getInstance().getHeads().keySet() ) {
 				String c = (pData.hasFound(i) ? c = (ChatColor.GREEN + "" + ChatColor.STRIKETHROUGH) : (ChatColor.RED + ""));
 				
-				String name = c + "[" + i + "] ";
+				String name = c + "[" + i + "]" + ChatColor.RESET +" ";
 
 				
 				TextComponent string = new TextComponent(name);
@@ -215,6 +225,19 @@ public class MessageHandler {
 		}
 		
     }
+
+	
+    public void sendEditCommands(Player p, int iD) {
+    	TextComponent name = new TextComponent(ChatColor.GOLD + "-- Click here to set name --\n");
+    	TextComponent hint = new TextComponent(ChatColor.GOLD + "-- Click here to set hint --\n");
+    	TextComponent command = new TextComponent(ChatColor.GOLD + "-- Click here to set command --");
+		
+    	name.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/hha setname " + iD + " ") );
+    	hint.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/hha sethint " + iD + " ") );
+    	command.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/hha setcommand " + iD + " ") );
+    	
+    	p.spigot().sendMessage(new ComponentBuilder(name).append(hint).append(command).create());
+	}
 
 
 

@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import tv.tirco.headhunter.Heads;
+import tv.tirco.headhunter.MessageHandler;
 import tv.tirco.headhunter.database.PlayerData;
 import tv.tirco.headhunter.database.UserManager;
 
@@ -30,7 +31,7 @@ public class PlayerPlaceHead implements Listener {
 		
 		//Check block type
 		Block block = event.getBlockPlaced();
-		if(!block.getType().equals(Material.PLAYER_HEAD)) {
+		if(!block.getType().equals(Material.PLAYER_HEAD) && !block.getType().equals(Material.PLAYER_WALL_HEAD)) {
 			return;
 		}
 		
@@ -45,17 +46,20 @@ public class PlayerPlaceHead implements Listener {
 		
 		//Add Data to HM
 		Location loc = block.getLocation();
-		
-		if(Heads.getInstance().addHead(loc)) {
+		int ID = Heads.getInstance().addHead(loc);
+		if(ID > -1) {
 			//Announce
 			for(Player player : Bukkit.getServer().getOnlinePlayers()) {
 				if(player.hasPermission("headhunter.admin")) {
-					player.sendMessage(p.getName() + " Just placed a new HeadHunter skull at " 
+					
+					player.sendMessage(MessageHandler.getInstance().prefix + " "+ p.getName() + " Just placed a new HeadHunter skull at " 
 				+ loc.getBlockX() +", " 
 				+ loc.getBlockY() +", "
-				+ loc.getBlockZ() +". ");
+				+ loc.getBlockZ() +". ID: " + ID );
 				}
 			}
+			//Send edit messages:
+			MessageHandler.getInstance().sendEditCommands(p, ID);
 		} else {
 			p.sendMessage("Failed to add a new skull to this location, as it already exists.");
 		}

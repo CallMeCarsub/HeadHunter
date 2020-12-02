@@ -257,7 +257,17 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
         		return true;
         	}
 
-    		
+    	} else if(args[0].equalsIgnoreCase("edit")){
+        	if(!(sender instanceof Player)) {
+        		sender.sendMessage("This command can only be used by players.");
+        		return true;
+        	} else {	        	
+        		Player player = (Player) sender;
+        		sender.sendMessage(prefix + " Edit commands for: " + id);
+        		MessageHandler.getInstance().sendEditCommands(player, id);
+        		
+        		return true;	
+        	}
     		
     	} else if(args[0].equalsIgnoreCase("delete")){
     		Heads.getInstance().deleteHead(id);
@@ -376,6 +386,13 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
         										   "and a clickable message to teleport to it.")));
         		find.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha find"));
         		message.append(find);
+        		
+        		TextComponent edit = new TextComponent(ChatColor.YELLOW + "/hha edit <id>\n");
+        		edit.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Gives you clickable messages so you\n" +
+        										   "can quickly edit head information.")));
+        		edit.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha edit <id>"));
+        		message.append(edit);
         		
         		TextComponent add = new TextComponent(ChatColor.YELLOW + "/hha add (on/off)\n");
         		add.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 

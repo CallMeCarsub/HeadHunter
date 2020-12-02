@@ -1,6 +1,7 @@
 package tv.tirco.headhunter.listeners;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,6 +15,9 @@ public class PlayerBreakBlock implements Listener {
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlayerBreakHead(BlockBreakEvent event) {
 		
+		if(!(event.getBlock().getType() == Material.PLAYER_HEAD || event.getBlock().getType() == Material.PLAYER_WALL_HEAD)) {
+			return;
+		}
 
 		Location loc = event.getBlock().getLocation(); 
 		//Is the block the player is clicking a loaded skull?

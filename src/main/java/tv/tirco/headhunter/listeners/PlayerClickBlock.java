@@ -2,6 +2,7 @@ package tv.tirco.headhunter.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,7 +38,11 @@ public class PlayerClickBlock implements Listener {
 		
 		if(!UserManager.hasPlayerDataKey(p)) {
 			return;
-		} 
+		}
+		
+		if(!(event.getClickedBlock().getType() == Material.PLAYER_HEAD || event.getClickedBlock().getType() == Material.PLAYER_WALL_HEAD)) {
+			return;
+		}
 		
 		//Perm check
 		if(Config.getInstance().getNeedPermToHunt() && !p.hasPermission("headhunter.basic")) {
