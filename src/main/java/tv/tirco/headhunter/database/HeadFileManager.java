@@ -44,7 +44,7 @@ public class HeadFileManager {
 			yamlFile.set("heads.id" + i + ".y", heads.get(i).getY());
 			yamlFile.set("heads.id" + i + ".z", heads.get(i).getZ());
 			yamlFile.set("heads.id" + i + ".world", heads.get(i).getWorld().getName());
-			yamlFile.set("heads.id" + i + ".hint", Heads.getInstance().getHint(i));
+			yamlFile.set("heads.id" + i + ".hint", Heads.getInstance().getHint(i, true));
 			yamlFile.set("heads.id" + i + ".command", Heads.getInstance().getCommand(i));
 			yamlFile.set("heads.id" + i + ".name", Heads.getInstance().getName(i));
 		}

@@ -271,13 +271,21 @@ public class Heads {
 	 */
 	
 	public String getHint(Integer i) {
+		return getHint(i, false);
+	}
+	
+	public String getHint(Integer i, boolean toSave) {
 		String name = "No name";
 		if(hasName(i)) {
 			name = getName(i);
 		}
 
-		String defaultHint = ChatColor.GREEN + "Name: " + ChatColor.translateAlternateColorCodes('&', name)
-		+ " " + ChatColor.GREEN + "ID: " + ChatColor.GOLD + i + "." + ChatColor.RESET + "\n";
+		String defaultHint = "";
+		if(!toSave) {
+			defaultHint = ChatColor.GREEN + "Name: " + ChatColor.translateAlternateColorCodes('&', name)
+			+ " " + ChatColor.GREEN + "ID: " + ChatColor.GOLD + i + "." + ChatColor.RESET + "\n";
+		}
+
 		if(hints.containsKey(i)) {
 			String hint = hints.get(i);
 			if(hint != null) {
@@ -286,6 +294,7 @@ public class Heads {
 		}
 		return defaultHint + "No hint available.";
 	}
+	
 		
 	public void setHint(int i, String s) {
 		if(s == null) {
@@ -411,5 +420,7 @@ public class Heads {
 		}
 		return -1;
 	}
+
+
 
 }
