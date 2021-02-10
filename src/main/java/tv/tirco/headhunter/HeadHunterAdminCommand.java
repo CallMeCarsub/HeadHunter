@@ -241,7 +241,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		
     		ComponentBuilder message = new ComponentBuilder("");
     		String coords = loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
-    		String reply = prefix + "Head " + id + " is located at " + ChatColor.WHITE + coords;
+    		String reply = prefix + "Head " + id + " is located at " + ChatColor.WHITE + coords + ChatColor.DARK_AQUA +" in world: " + loc.getWorld().getName();
         	if(!(sender instanceof Player)) {
         		sender.sendMessage(reply);
         		return true;
@@ -251,7 +251,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
         		TextComponent string = new TextComponent(reply);
         		Text hint = new Text("Click for TP command. \n/gamemode spectator is recommended.");
         		string.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hint));
-        		string.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + coords));
+        		string.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tppos " + coords + " 90 0 " + loc.getWorld().getName()));
         		message.append(string);
         		player.spigot().sendMessage(message.create());
         		return true;

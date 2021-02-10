@@ -1,6 +1,8 @@
 package tv.tirco.headhunter.database;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
@@ -188,6 +190,16 @@ public class PlayerProfile {
 	
 	public boolean getAddMode() {
 		return addMode;
+	}
+
+	public List<Integer> getFoundIDs() {
+		List<Integer> foundIDs = new ArrayList<Integer>();
+		for(Integer i : this.found.keySet()) {
+			if(found.get(i)) {
+				foundIDs.add(i);
+			}
+		}
+		return foundIDs;
 	}
 	
 

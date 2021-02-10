@@ -420,6 +420,29 @@ public class Heads {
 		}
 		return -1;
 	}
+	
+	/**
+	 * 
+	 * @param loc Location to check if it's near
+	 * @param distance Max distance of head
+	 * @param ignore List of heads to ignore.
+	 * @return
+	 */
+	public List<Location> getHeadsNear(Location loc, double distance, List<Integer> ignore) {
+		List<Location> test = new ArrayList<Location>();
+		for(Integer i : getHeads().keySet()) {
+			if(ignore.contains(i)) {
+				continue;
+			}
+			Location hLoc = getHeads().get(i);
+			if(hLoc.getWorld().equals(loc.getWorld())) {
+				if(hLoc.distance(loc) < distance) {
+					test.add(hLoc);
+				}
+			}
+		}
+		return test;
+	}
 
 
 

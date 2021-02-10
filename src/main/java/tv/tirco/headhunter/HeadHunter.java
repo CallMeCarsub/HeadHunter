@@ -97,7 +97,7 @@ public class HeadHunter extends JavaPlugin {
 
 	private void scheduleTasks() {
 		if(Config.getInstance().getUseParticles()) {
-			new ParticleRunnable().runTaskTimer(this, 60, 60);
+			new ParticleRunnable().runTaskTimerAsynchronously(this, 60, 60);
 		}
 		
 		long saveInterval = Config.getInstance().getSaveInterval();

@@ -12,7 +12,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
-import net.md_5.bungee.api.ChatColor;
 import tv.tirco.headhunter.Heads;
 import tv.tirco.headhunter.MessageHandler;
 import tv.tirco.headhunter.config.Config;
@@ -58,26 +57,26 @@ public class PlayerClickBlock implements Listener {
 			int headID = Heads.getInstance().getHeadId(loc);
 			if(pData.hasFound(headID)) {
 				//Send Already Found Message.
-				String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageAlreadyFound(), p);
+				String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageAlreadyFound(), p, headID);
 				p.sendMessage(s);
 				return;
 			}
 			
 			pData.find(headID);
 			//Send Counting Message
-			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCount(), p);
-			s = s.replace("<idfound>", headID+"");
-			if(s.contains("<headname>")) { //Move to MessageHandler?
-				String name = "";
-				if(Heads.getInstance().hasName(headID)) {
-					//Grab custom name
-					name = ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getName(headID));
-				} else {
-					//Get ID as name.
-					name = "#" + headID;
-				}
-				s = s.replace("<headname>", name);
-			}
+			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCount(), p, headID);
+//			s = s.replace("<idfound>", headID+"");
+//			if(s.contains("<headname>")) { //Move to MessageHandler?
+//				String name = "";
+//				if(Heads.getInstance().hasName(headID)) {
+//					//Grab custom name
+//					name = ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getName(headID));
+//				} else {
+//					//Get ID as name.
+//					name = "#" + headID;
+//				}
+//				s = s.replace("<headname>", name);
+//			}
 			
 			p.sendMessage(s);
 			
