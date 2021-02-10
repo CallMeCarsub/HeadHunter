@@ -127,16 +127,11 @@ public class PlayerFileManager implements DatabaseManager {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	public void purgeOldUsers() {
 		int removedPlayers = 0;
 		long currentTime = System.currentTimeMillis();
 		
-		Boolean notEnabled = true;
-		if(notEnabled) {
-			return;
-		}
-		
+
 		if(Config.getInstance().getOldUsersCutoff() == 0) {
 			return;
 		}
@@ -147,7 +142,6 @@ public class PlayerFileManager implements DatabaseManager {
 		FileWriter out = null;
 		String usersFilePath = HeadHunter.getUsersFilePath();
 
-		// This code is O(n) instead of O(n�)
 		synchronized (fileWritingLock) {
 			try {
 				in = new BufferedReader(new FileReader(usersFilePath));
@@ -156,7 +150,7 @@ public class PlayerFileManager implements DatabaseManager {
 
 				while ((line = in.readLine()) != null) {
 					String[] character = line.split(":");
-					String name = character[PLAYERNAME_POSITION];
+					String uuid = character[UUID_POSITION];
 					long lastPlayed = 0;
 					boolean rewrite = false;
 					try {
@@ -164,7 +158,8 @@ public class PlayerFileManager implements DatabaseManager {
 					} catch (NumberFormatException e) {
 					}
 					if (lastPlayed == 0) {
-						OfflinePlayer player = HeadHunter.plugin.getServer().getOfflinePlayer(name);
+						//Last played not found in config, getting last time player was online on server
+						OfflinePlayer player = HeadHunter.plugin.getServer().getOfflinePlayer(UUID.fromString(uuid));
 						lastPlayed = player.getLastPlayed();
 						rewrite = true;
 					}

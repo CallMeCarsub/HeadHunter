@@ -90,6 +90,10 @@ public class Config extends AutoUpdateConfigLoader {
 		return config.getInt("setting.purgeafter", 0);
 	}
 	
+	public boolean purgeOldUsers() {
+		return config.getBoolean("setting.dopurge", false);
+	}
+	
 	public boolean getAnnounceFindAll() {
 		return config.getBoolean("setting.announcefindingall", true);
 	}

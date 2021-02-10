@@ -81,6 +81,8 @@ public class HeadHunter extends JavaPlugin {
             this.papi = true;
 		}
         
+        db.purgeOldUsers();
+        
         //Load our heads after worlds and all are loaded.
         new BukkitRunnable() {
             
