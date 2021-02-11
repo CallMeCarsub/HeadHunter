@@ -23,9 +23,12 @@ setting:
 ##Only players that have found any heads are saved.
     autosaveinterval: 15
 
+## Automatically delete users that haven't been on the server in a while:
 ##How long ago should a player have logged in before we purge their data? (Months)
 ##0 = never purge.
-    purgeafter: 0
+    purgeafter: 3
+##Should only players that have no progress get purged from the database? 
+    onlypurgeemptyplayers: true
 
 ##Do you need the headhunter.basic permission to unlock heads?
     huntingrequiresperm: false

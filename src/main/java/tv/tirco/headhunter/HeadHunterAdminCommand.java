@@ -52,8 +52,10 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
         	sender.sendMessage(prefix + " Saving users!");
         	UserManager.saveAll();
         	return true;
-        	
-        	
+    	} else if(args[0].equalsIgnoreCase("purgepowerless")) {
+    		int purged = HeadHunter.db.purgePowerlessUsers();
+        	sender.sendMessage("Purged " + purged + " users from the database, as they had found 0 heads.");
+        	return true;
         	
         	//PLAYER ONLY
     	} else if(args[0].equalsIgnoreCase("add")){ //toggle on/off
@@ -456,6 +458,13 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
         										   "If no file is specified, both are saved.")));
         		forcesave.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha forcesave"));
         		message.append(forcesave);
+        		
+        		TextComponent purgepowerless = new TextComponent(ChatColor.YELLOW + "/hha purgepowerless\n");
+        		purgepowerless.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Clears all users from the file, that has not\n" +
+        										   "found any heads. Warning: Can lagg a bit!")));
+        		purgepowerless.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha purgepowerless"));
+        		message.append(purgepowerless);
     		}
     		
     		message.append(title);
@@ -468,7 +477,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas","setname","setcommand");
+		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas","setname","setcommand","purgepowerless");
 		switch (args.length) {
 		case 1:
 			return StringUtil.copyPartialMatches(args[0], commands, new ArrayList<String>(commands.size()));

@@ -90,8 +90,8 @@ public class Config extends AutoUpdateConfigLoader {
 		return config.getInt("setting.purgeafter", 0);
 	}
 	
-	public boolean purgeOldUsers() {
-		return config.getBoolean("setting.dopurge", false);
+	public boolean onlyPurgeIfPowerless() {
+		return config.getBoolean("setting.onlypurgeemptyplayers", true);
 	}
 	
 	public boolean getAnnounceFindAll() {
