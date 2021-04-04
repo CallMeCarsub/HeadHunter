@@ -12,7 +12,7 @@ setting:
 ##Can be turned on temporarily with the /headhunteradmin debug command
     debugtoadmins: false
 
-##Should the heads emit particles? Not yet implemented.
+##Should the heads emit particles?
     particles: true
 
 ##Should we announce to all players when a player has found all heads? 
@@ -20,7 +20,6 @@ setting:
 
 ##How often should we save the head data? (in minutes)
 ##Heads are also saved when a player leaves the server.
-##Only players that have found any heads are saved.
     autosaveinterval: 15
 
 ## Automatically delete users that haven't been on the server in a while:
@@ -37,7 +36,7 @@ setting:
 ##
     topamountsaved: 20
     
-##Should we run commands when heads are found (if a command is set?
+##Should we run commands when heads are found (if a command is set?)
 ##These commands are run from console.
     commandOnHeadFound: true
 
