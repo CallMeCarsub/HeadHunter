@@ -20,6 +20,10 @@ public class Config extends AutoUpdateConfigLoader {
 
 		return instance;
 	}
+	
+	public void reload() {
+		instance = new Config();
+	}
 
 	@Override
 	protected void loadKeys() {
@@ -127,5 +131,20 @@ public class Config extends AutoUpdateConfigLoader {
 
 	public String getMessageCountCommand() {
 		return config.getString("messages.countcommandmessage", "&aYou have found &6<found>&a out of &6<max>&a heads.");
+	}
+	
+	public List<String> getRewardCommands(int amount) {
+		if(config.isSet("ExtraRewards."+amount)) {
+			return config.getStringList("ExtraRewards."+amount);
+		} else {
+			return new ArrayList<String>();
+		}
+	}
+	public List<String> getMaxRewardCommands() {
+		if(config.isSet("ExtraRewards.ALL")) {
+			return config.getStringList("ExtraRewards.ALL");
+		} else {
+			return new ArrayList<String>();
+		}
 	}
 }

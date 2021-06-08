@@ -39,7 +39,18 @@ setting:
 ##Should we run commands when heads are found (if a command is set?)
 ##These commands are run from console.
     commandOnHeadFound: true
-
+ExtraRewards:
+##These rewards are added when the player has found N amount of heads.
+##It can run multiple commands. The commands are run from console.
+##Be careful with give commands, as the plugin does not check if their inventory is full.
+##If the player "ufinds" a head these can trigger again. (Only happens if admins do stuff)
+##You can also use the "ALL" key, which will trigger when all heads have been found.*
+##Arguments: <playername>, <id>, <found>
+    1:
+        - msg <playername> Nice! You have collected <found> head!
+        - msg <playername> I'll be watching you.
+    10: []
+    ALL: []
 ############
 ##Messages##
 ############

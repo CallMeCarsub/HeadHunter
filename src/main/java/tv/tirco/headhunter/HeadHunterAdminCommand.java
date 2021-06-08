@@ -21,6 +21,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import tv.tirco.headhunter.config.Config;
 import tv.tirco.headhunter.database.PlayerData;
 import tv.tirco.headhunter.database.UserManager;
 
@@ -56,7 +57,10 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		int purged = HeadHunter.db.purgePowerlessUsers();
         	sender.sendMessage("Purged " + purged + " users from the database, as they had found 0 heads.");
         	return true;
-        	
+    	} else if(args[0].equalsIgnoreCase("reloadconfig")) {
+    		Config.getInstance().reload();
+    		sender.sendMessage("Config has been reloaded!");
+    		return true;
         	//PLAYER ONLY
     	} else if(args[0].equalsIgnoreCase("add")){ //toggle on/off
     		if(!(sender instanceof Player)) {
@@ -477,7 +481,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas","setname","setcommand","purgepowerless");
+		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas","setname","setcommand","purgepowerless","reloadconfig");
 		switch (args.length) {
 		case 1:
 			return StringUtil.copyPartialMatches(args[0], commands, new ArrayList<String>(commands.size()));
