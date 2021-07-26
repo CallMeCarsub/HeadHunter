@@ -239,6 +239,16 @@ public class MessageHandler {
     	p.spigot().sendMessage(new ComponentBuilder(name).append(hint).append(command).create());
 	}
 
+	
+    public void sendHintMessage(Player p, int iD) {
+		String hint = ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getHint(iD));
+		String name = "";
+		if(Heads.getInstance().getName(iD) != null) {
+			name = " (" + ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getName(iD)) + ChatColor.GREEN +")";
+		}
+		p.sendMessage(prefix + ChatColor.GREEN +  "Hint for Head " + iD + name + ": " + ChatColor.GOLD + hint);
+	}
+
 
 
 }

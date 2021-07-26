@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -121,6 +122,22 @@ public class Heads {
 		
 		//MessageHandler.getInstance().debug("returning null");
 		return null;
+	}
+	
+	public List<String> getTopPlayerList() {
+		List<String> top = new ArrayList<String>();
+		if(this.sortedTop.isEmpty()) {
+			top.add("No top list available.");
+			return top;
+		}
+		
+		for(UUID id : sortedTop.keySet()) {
+			int spot = 1;
+			OfflinePlayer oPlayer = Bukkit.getOfflinePlayer(id); 
+			top.add(ChatColor.GREEN + "#" + spot + ChatColor.WHITE + " - " + ChatColor.GOLD + oPlayer.getName() + ChatColor.WHITE + " - " + ChatColor.GOLD + sortedTop.get(id));
+			spot ++;
+		}
+		return top;
 	}
 	
 	public void updatedSortedList(){
@@ -444,6 +461,8 @@ public class Heads {
 		return test;
 	}
 
-
+	public Set<String> getHeadNames() {
+		return this.headNames.values();
+	}
 
 }

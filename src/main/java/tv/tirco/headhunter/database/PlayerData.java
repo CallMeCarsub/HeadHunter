@@ -118,5 +118,9 @@ public class PlayerData {
 	public FixedMetadataValue getPlayerMetadata() {
 		return playerMetadata;
 	}
+	
+	public List<Integer> getNotFound(){
+		return profile.getNotFoundIDs();
+	}
 
 }

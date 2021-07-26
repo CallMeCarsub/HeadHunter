@@ -194,12 +194,24 @@ public class PlayerProfile {
 
 	public List<Integer> getFoundIDs() {
 		List<Integer> foundIDs = new ArrayList<Integer>();
-		for(Integer i : this.found.keySet()) {
+		foundIDs.addAll(this.found.keySet());
+//		for(Integer i : this.found.keySet()) {
+//			if(found.get(i)) {
+//				foundIDs.add(i);
+//			}
+//		}
+		return foundIDs;
+	}
+	
+	public List<Integer> getNotFoundIDs() {
+		List<Integer> notFound = new ArrayList<Integer>(); 
+		notFound.addAll(Heads.getInstance().getHeads().keySet());
+		for(int i : this.found.keySet()) {
 			if(found.get(i)) {
-				foundIDs.add(i);
+				notFound.remove(i);
 			}
 		}
-		return foundIDs;
+		return notFound;
 	}
 	
 
