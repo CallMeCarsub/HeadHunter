@@ -2,6 +2,7 @@ package tv.tirco.headhunter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -38,7 +39,35 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
     	} else {
     		if(args[0].equalsIgnoreCase("count")) {
     			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCountCommand(), player);
+    			player.sendMessage(prefix + " /hh list - List the heads you have and have not found.");
+    			player.sendMessage(prefix + " /hh count - Shows the amount of heads you have found.");
+    			player.sendMessage(prefix + " /hh hint <name> - Shows you a hint for the specified head - or a random one.");
+    			player.sendMessage(prefix + " /hh top - Get the list of the users that have found the most.");
     			player.sendMessage(s);
+    		} else if(args[0].equalsIgnoreCase("hint")) {
+    			
+    			int id;
+    			
+    			if(args.length < 2) {
+    				PlayerData pData = UserManager.getPlayer(player);
+    				List<Integer> notFound = pData.getNotFound();
+    				if(notFound.isEmpty()) {
+    					sender.sendMessage(prefix + " Can not select random hint when you have found all heads!");
+    					return true;
+    				}
+    				Random rand = new Random();
+    				id = notFound.get(rand.nextInt(notFound.size()));
+    			} else {
+        			id = getHeadID(args[1]);
+                	if(id == -1) {
+                		sender.sendMessage(prefix + " Could not parse " + args[1] + " to a number or a headname.");
+                		sender.sendMessage(prefix + " Keep in mind that some heads have colorcodes.");
+                		return true;
+                	}
+    			}
+    			MessageHandler.getInstance().sendHintMessage(player, id);
+
+    			
     		} else if(args[0].equalsIgnoreCase("list")) {
     			if(!UserManager.hasPlayerDataKey(player)){
     				player.sendMessage("Unable to do this at this time.");
@@ -83,13 +112,16 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
     			return true;
 
     		} else if(args[0].equalsIgnoreCase("top")) {
-    			player.sendMessage("Not yet implemented.");
+    			for(String s : Heads.getInstance().getTopPlayerList()) {
+    				sender.sendMessage(s);
+    			}
     			return true;
     		} else { //Help command or wrong command.
     			
     			player.sendMessage(prefix + " /hh list - List the heads you have and have not found.");
     			player.sendMessage(prefix + " /hh count - Shows the amount of heads you have found.");
-    			//player.sendMessage(prefix + " /hh top - Get the list of the users that have found the most.");
+    			player.sendMessage(prefix + " /hh top - Get the list of the users that have found the most.");
+    			player.sendMessage(prefix + " /hh hint <name> - Shows you a hint for the specified head - or a random one.");
     			return true;
     		}
     	}
@@ -97,14 +129,30 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
     	return true;
     }
     
+    private int getHeadID(String string) {
+    	int id = -1;
+    	try {
+    		id = Integer.parseInt(string);
+    	} catch(NumberFormatException ex) {
+    		id = Heads.getInstance().getHeadIDFromName(string);
+    	}
+		return id;
+	}
+    
 
     
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> commands = ImmutableList.of("count","list","help");
+		List<String> commands = ImmutableList.of("count","list","hint","help","top");
 		switch (args.length) {
 		case 1:
 			return StringUtil.copyPartialMatches(args[0], commands, new ArrayList<String>(commands.size()));
+		case 2:
+			if(args[0].equalsIgnoreCase("hint")) {
+				return StringUtil.copyPartialMatches(args[1], Heads.getInstance().getHeadNames(), new ArrayList<String>(Heads.getInstance().getHeadNames().size()));
+			} else {
+				return null;
+			}
 		default:
 			return null;
     	}
