@@ -206,7 +206,7 @@ public class PlayerProfile {
 	public List<Integer> getNotFoundIDs() {
 		List<Integer> notFound = new ArrayList<Integer>(); 
 		notFound.addAll(Heads.getInstance().getHeads().keySet());
-		for(int i : this.found.keySet()) {
+		for(Integer i : this.found.keySet()) {
 			if(found.get(i)) {
 				notFound.remove(i);
 			}

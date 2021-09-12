@@ -15,6 +15,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import tv.tirco.headhunter.Heads;
 import tv.tirco.headhunter.MessageHandler;
 import tv.tirco.headhunter.config.Config;
+import tv.tirco.headhunter.config.Messages;
 import tv.tirco.headhunter.database.PlayerData;
 import tv.tirco.headhunter.database.UserManager;
 
@@ -57,14 +58,14 @@ public class PlayerClickBlock implements Listener {
 			int headID = Heads.getInstance().getHeadId(loc);
 			if(pData.hasFound(headID)) {
 				//Send Already Found Message.
-				String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageAlreadyFound(), p, headID);
+				String s = MessageHandler.getInstance().translateTags(Messages.getInstance().getMessageAlreadyFound(), p, headID);
 				p.sendMessage(s);
 				return;
 			}
 			
 			pData.find(headID);
 			//Send Counting Message
-			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCount(), p, headID);
+			String s = MessageHandler.getInstance().translateTags(Messages.getInstance().getMessageCount(), p, headID);
 //			s = s.replace("<idfound>", headID+"");
 //			if(s.contains("<headname>")) { //Move to MessageHandler?
 //				String name = "";
@@ -84,16 +85,15 @@ public class PlayerClickBlock implements Listener {
 			if(Config.getInstance().runCommandOnHeadFound() && Heads.getInstance().hasCommand(headID)) {
 				//Parameters %playername% %id% %found%
 				//Replace our parameters.
-				String command = Heads.getInstance().getCommand(headID);
-				command = parseCommandString(command, p, headID, pData);
-				
-				//Run our command
-				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+				for(String command : Heads.getInstance().getCommands(headID)) {
+					command = parseCommandString(command, p, headID, pData);
+					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+				}
+
 			}
 			
 			for(String command : Config.getInstance().getRewardCommands(pData.getAmountFound())) {
 				command = parseCommandString(command, p, headID, pData);
-				
 				//Run our command
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
 			}
@@ -103,7 +103,7 @@ public class PlayerClickBlock implements Listener {
 			
 			//Player has found all!
 			if(pData.getAmountFound() >= Heads.getInstance().getHeadAmount()) {
-				String announce = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageAnnounceFindAll(), p);
+				String announce = MessageHandler.getInstance().translateTags(Messages.getInstance().getMessageAnnounceFindAll(), p);
 				if(Config.getInstance().getAnnounceFindAll()) {
 					//Send to all players.
 					for(Player player : Bukkit.getOnlinePlayers()) {

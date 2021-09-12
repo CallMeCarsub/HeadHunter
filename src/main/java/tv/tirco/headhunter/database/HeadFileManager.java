@@ -2,7 +2,9 @@ package tv.tirco.headhunter.database;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -34,22 +36,42 @@ public class HeadFileManager {
 		
 		//setup variables.
 		File f = new File(directory,filename);
-		yamlFile = new YamlConfiguration();
+		if(yamlFile == null) {
+			yamlFile = new YamlConfiguration(); //start from scratch.
+		}
 		
 		BiMap<Integer, Location> heads = Heads.getInstance().getHeads();
+		if(heads.isEmpty() && !Heads.getInstance().headsDeleted()) {
+			MessageHandler.getInstance().log("Refusing to save heads - List was empty but no heads deleted.");
+			return;
+		}
 		//HashMap<Integer,String> headHints = Heads.getInstance().getHeadsHints();
-		
+		for(Integer i : Heads.getInstance().getDeletedHeads()) {
+			if(yamlFile.isSet("heads.id"+ i)) {
+				yamlFile.set("heads.id" + i, null);
+				MessageHandler.getInstance().debug("Deleted " + i + " from Heads.yml");
+			}
+		}
 		for(Integer i : heads.keySet()) {
 			yamlFile.set("heads.id" + i + ".x", heads.get(i).getX());
 			yamlFile.set("heads.id" + i + ".y", heads.get(i).getY());
 			yamlFile.set("heads.id" + i + ".z", heads.get(i).getZ());
 			yamlFile.set("heads.id" + i + ".world", heads.get(i).getWorld().getName());
 			yamlFile.set("heads.id" + i + ".hint", Heads.getInstance().getHint(i, true));
-			yamlFile.set("heads.id" + i + ".command", Heads.getInstance().getCommand(i));
+			yamlFile.set("heads.id" + i + ".commands", Heads.getInstance().getCommands(i));
 			yamlFile.set("heads.id" + i + ".name", Heads.getInstance().getName(i));
+			if(yamlFile.isSet("heads.id" + i + "command")) {
+				yamlFile.set("heads.id" + i + ".command", null); //clear out old code.
+			}
 		}
 		
 		MessageHandler.getInstance().debug(ChatColor.GOLD + " Saving topScores...");
+		
+		//Clear old top:
+		if(yamlFile.isSet("scores")) {
+			MessageHandler.getInstance().debug(ChatColor.GOLD + " Clearing old scores!");
+			yamlFile.set("scores", null);
+		}
 		LinkedHashMap<UUID,Integer> topScores = Heads.getInstance().getSortedTopMap();
 		MessageHandler.getInstance().debug(ChatColor.GOLD + " Retreived scores from heads.java. Looping:");
 		for(UUID uuid : topScores.keySet()) {
@@ -126,11 +148,29 @@ public class HeadFileManager {
 		        			 Heads.getInstance().setName(id, name, false);
 		        		 }
 		        		 
+		        		 //Update check + new "Commands" feature.
 		        		 //Command
-		        		 String command = yamlFile.getString("heads."+ key +".command");
-		        		 if(command != null && !command.isEmpty()) {
-		        			 Heads.getInstance().setCommand(id, command);
+		        		 List<String> commands;
+		        		 
+		        		 if(yamlFile.isSet("heads." + key + ".command") && !yamlFile.isSet("heads." + key + ".commands")) {
+		        			 MessageHandler.getInstance().log("Updating head: " + key + " - command -> commands.");
+		        			 commands = new ArrayList<String>();
+			        		 String command = yamlFile.getString("heads."+ key +".command");
+			        		 if(command != null && !command.isEmpty()) {
+			        			 commands.add(command);
+			        		 }
+			        		 yamlFile.set("heads." + key + ".commands", commands);
+			        		 yamlFile. set("heads." + key + ".command", null); //Clear "command" bit.
+			        		 Heads.getInstance().setChanged(true); //make sure it saves.
+		        		 } else if(yamlFile.isSet("heads." + key + ".commands")){
+		        			 commands = yamlFile.getStringList("heads." + key + ".commands");
+		        		 } else {
+		        			 commands = new ArrayList<String>();
 		        		 }
+		        		 
+		        		 Heads.getInstance().setCommands(id, commands);
+
+		        		 
 	        		 } catch(Exception ex) {
 	        			 ex.printStackTrace();
 	        		 }

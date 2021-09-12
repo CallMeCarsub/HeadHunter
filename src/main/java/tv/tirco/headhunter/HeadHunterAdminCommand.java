@@ -307,16 +307,36 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		return true;
     		
     		
-    	} else if(args[0].equals("setcommand")) {
+    	} else if(args[0].equals("addcommand")) {
     		StringBuilder sb = new StringBuilder("");
     		for (int i = 2; i < args.length; i++) {
     		    sb.append(args[i]).append(' ');
     		}
     		String command = sb.toString().substring(0, sb.toString().length() - 1);
-    		Heads.getInstance().setCommand(id,command);
+    		Heads.getInstance().addCommand(id,command);
     		sender.sendMessage(ChatColor.GREEN + "Head " + id + " now has its command set as:");
     		sender.sendMessage(command);
     		
+    		return true;
+    	} else if(args[0].equals("seecommands")) {
+    		if(!Heads.getInstance().hasCommand(id)) {
+    			sender.sendMessage(ChatColor.RED + "The head with ID " + ChatColor.GREEN + id + ChatColor.RED + " has no commands set.");
+    			return true;
+    		}
+    		sender.sendMessage(ChatColor.GOLD + "Commands for Head: " + ChatColor.GREEN + id);
+    		for(String s : Heads.getInstance().getCommands(id)) {
+    			sender.sendMessage(ChatColor.WHITE + " - " + ChatColor.YELLOW + s);
+    		}
+    		return true;
+    	} else if(args[0].equals("clearcommands")) {
+    		StringBuilder sb = new StringBuilder("");
+    		for (int i = 2; i < args.length; i++) {
+    			sb.append(args[i]).append(' ');
+    		}
+    		String command = sb.toString().substring(0, sb.toString().length() - 1);
+    		Heads.getInstance().clearCommands(id);
+    		sender.sendMessage(ChatColor.GREEN + "Head " + id + " now has all commands cleared.");
+    		sender.sendMessage(command);
     		return true;
     	}
     	
@@ -481,7 +501,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas","setname","setcommand","purgepowerless","reloadconfig");
+		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas","setname","addcommand","clearcommands","seecommands","purgepowerless","reloadconfig");
 		switch (args.length) {
 		case 1:
 			return StringUtil.copyPartialMatches(args[0], commands, new ArrayList<String>(commands.size()));

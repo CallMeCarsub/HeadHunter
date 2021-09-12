@@ -230,23 +230,23 @@ public class MessageHandler {
     public void sendEditCommands(Player p, int iD) {
     	TextComponent name = new TextComponent(ChatColor.GOLD + "-- Click here to set name --\n");
     	TextComponent hint = new TextComponent(ChatColor.GOLD + "-- Click here to set hint --\n");
-    	TextComponent command = new TextComponent(ChatColor.GOLD + "-- Click here to set command --");
+    	TextComponent command = new TextComponent(ChatColor.GOLD + "-- Click here to add command --\n");
+    	TextComponent clearcommand = new TextComponent(ChatColor.GOLD + "-- Click here to clear commands --\n");
+    	TextComponent seecommand = new TextComponent(ChatColor.GOLD + "-- Click here to see commands --");
 		
     	name.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/hha setname " + iD + " ") );
     	hint.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/hha sethint " + iD + " ") );
-    	command.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/hha setcommand " + iD + " ") );
+    	command.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/hha addcommand " + iD + " ") );
+    	clearcommand.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/hha clearcommands " + iD + " ") );
+    	seecommand.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/hha seecommands " + iD + " ") );
     	
-    	p.spigot().sendMessage(new ComponentBuilder(name).append(hint).append(command).create());
+    	p.spigot().sendMessage(new ComponentBuilder(name).append(hint).append(command).append(clearcommand).append(seecommand).create());
 	}
 
 	
     public void sendHintMessage(Player p, int iD) {
 		String hint = ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getHint(iD));
-		String name = "";
-		if(Heads.getInstance().getName(iD) != null) {
-			name = " (" + ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getName(iD)) + ChatColor.GREEN +")";
-		}
-		p.sendMessage(prefix + ChatColor.GREEN +  "Hint for Head " + iD + name + ": " + ChatColor.GOLD + hint);
+		p.sendMessage(prefix + ChatColor.GOLD + hint);
 	}
 
 

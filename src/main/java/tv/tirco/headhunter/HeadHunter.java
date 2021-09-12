@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.base.Charsets;
 
 import tv.tirco.headhunter.config.Config;
+import tv.tirco.headhunter.config.Messages;
 import tv.tirco.headhunter.database.DatabaseManager;
 import tv.tirco.headhunter.database.DatabaseManagerFactory;
 import tv.tirco.headhunter.database.SaveTimerTask;
@@ -124,6 +125,7 @@ public class HeadHunter extends JavaPlugin {
 	}
 	
 	private void loadConfig() {
+		Messages.getInstance();
 		Config.getInstance();
 	}
 

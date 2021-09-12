@@ -13,36 +13,40 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
-import net.md_5.bungee.api.ChatColor;
-import tv.tirco.headhunter.config.Config;
+import tv.tirco.headhunter.config.Messages;
 import tv.tirco.headhunter.database.PlayerData;
 import tv.tirco.headhunter.database.UserManager;
 
 public class HeadHunterCommand implements CommandExecutor,TabCompleter {
 	
 	String prefix = MessageHandler.getInstance().translateTags(MessageHandler.getInstance().prefix);
-
+	List<String> commands = ImmutableList.of("count","list","hint","help","top");
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
     	if(!(sender instanceof Player)) {
-    		sender.sendMessage(prefix + " This command can only be used by players.");
+    		sender.sendMessage(prefix + " " + Messages.getInstance().getMessage("this-command-can-only-be-used-by-players"));
     		return true;
     	}
-    	//ARGS - LIST, COUNT, TOP, HELP
+    	//ARGS - LIST, COUNT, TOP, HELP, HINT
     	
     	Player player = (Player) sender;
+    	
+    	if(!UserManager.hasPlayerDataKey(player)) {
+    		player.sendMessage(Messages.getInstance().getMessage("error-please-wait-until-load"));
+    		return true;
+    	}
 
     	if(args.length < 1) {
-			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCountCommand(), player);
+			String s = MessageHandler.getInstance().translateTags(Messages.getInstance().getMessageCountCommand(), player);
+  			player.sendMessage(Messages.getInstance().getMessage("help-list"));
+  			player.sendMessage(Messages.getInstance().getMessage("help-count"));
+  			player.sendMessage(Messages.getInstance().getMessage("help-hint"));
+  			player.sendMessage(Messages.getInstance().getMessage("help-top"));
 			player.sendMessage(s);
         	return true;
     	} else {
     		if(args[0].equalsIgnoreCase("count")) {
-    			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCountCommand(), player);
-    			player.sendMessage(prefix + " /hh list - List the heads you have and have not found.");
-    			player.sendMessage(prefix + " /hh count - Shows the amount of heads you have found.");
-    			player.sendMessage(prefix + " /hh hint <name> - Shows you a hint for the specified head - or a random one.");
-    			player.sendMessage(prefix + " /hh top - Get the list of the users that have found the most.");
+    			String s = MessageHandler.getInstance().translateTags(Messages.getInstance().getMessageCountCommand(), player);
     			player.sendMessage(s);
     		} else if(args[0].equalsIgnoreCase("hint")) {
     			
@@ -52,7 +56,7 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
     				PlayerData pData = UserManager.getPlayer(player);
     				List<Integer> notFound = pData.getNotFound();
     				if(notFound.isEmpty()) {
-    					sender.sendMessage(prefix + " Can not select random hint when you have found all heads!");
+    					sender.sendMessage(prefix + " " + Messages.getInstance().getMessage("error-no-hint-found-all"));
     					return true;
     				}
     				Random rand = new Random();
@@ -60,8 +64,7 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
     			} else {
         			id = getHeadID(args[1]);
                 	if(id == -1) {
-                		sender.sendMessage(prefix + " Could not parse " + args[1] + " to a number or a headname.");
-                		sender.sendMessage(prefix + " Keep in mind that some heads have colorcodes.");
+                		sender.sendMessage(prefix + String.format(Messages.getInstance().getMessage("error-could-not-parse"),args[1]));
                 		return true;
                 	}
     			}
@@ -70,12 +73,12 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
     			
     		} else if(args[0].equalsIgnoreCase("list")) {
     			if(!UserManager.hasPlayerDataKey(player)){
-    				player.sendMessage("Unable to do this at this time.");
+    				player.sendMessage(Messages.getInstance().getMessage("error-unable-to-do-that-now"));
     				return true;
     			}
     			
     			PlayerData pData = UserManager.getPlayer(player);
-    			player.sendMessage(ChatColor.GOLD + "-- Here is a list of all heads you can find. --");
+    			player.sendMessage(Messages.getInstance().getMessage("list-header"));
         		Boolean asIDs = false;
         		int page = 0;
         		
@@ -117,11 +120,11 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
     			}
     			return true;
     		} else { //Help command or wrong command.
-    			
-    			player.sendMessage(prefix + " /hh list - List the heads you have and have not found.");
-    			player.sendMessage(prefix + " /hh count - Shows the amount of heads you have found.");
-    			player.sendMessage(prefix + " /hh top - Get the list of the users that have found the most.");
-    			player.sendMessage(prefix + " /hh hint <name> - Shows you a hint for the specified head - or a random one.");
+    			player.sendMessage(prefix + Messages.getInstance().getMessage("help"));
+      			player.sendMessage(Messages.getInstance().getMessage("help-list"));
+      			player.sendMessage(Messages.getInstance().getMessage("help-count"));
+      			player.sendMessage(Messages.getInstance().getMessage("help-hint"));
+      			player.sendMessage(Messages.getInstance().getMessage("help-top"));
     			return true;
     		}
     	}
@@ -143,7 +146,6 @@ public class HeadHunterCommand implements CommandExecutor,TabCompleter {
     
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> commands = ImmutableList.of("count","list","hint","help","top");
 		switch (args.length) {
 		case 1:
 			return StringUtil.copyPartialMatches(args[0], commands, new ArrayList<String>(commands.size()));
