@@ -42,8 +42,6 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
 			Heads.getInstance().fixHeads();
 			sender.sendMessage(prefix + " Saving heads!");
 			Heads.getInstance().saveHeads();
-			sender.sendMessage(prefix + " Wiping user progress!");
-			UserManager.clearAll();
 			Bukkit.getOnlinePlayers().forEach(plr -> {
 				new PlayerProfileLoadingTask(plr).runTaskLaterAsynchronously(HeadHunter.plugin, 60);
 			});
