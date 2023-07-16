@@ -23,6 +23,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import tv.tirco.headhunter.config.Config;
 import tv.tirco.headhunter.database.PlayerData;
+import tv.tirco.headhunter.database.PlayerProfileLoadingTask;
 import tv.tirco.headhunter.database.UserManager;
 
 public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
@@ -36,7 +37,18 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     	} 
     	
   //ForceSave
-    	if(args[0].equalsIgnoreCase("forcesave")) {
+		if(args[0].equalsIgnoreCase("fixheads")){
+			sender.sendMessage(prefix + " Fixing heads!");
+			Heads.getInstance().fixHeads();
+			sender.sendMessage(prefix + " Saving heads!");
+			Heads.getInstance().saveHeads();
+			sender.sendMessage(prefix + " Wiping user progress!");
+			UserManager.clearAll();
+			Bukkit.getOnlinePlayers().forEach(plr -> {
+				new PlayerProfileLoadingTask(plr).runTaskLaterAsynchronously(HeadHunter.plugin, 60);
+			});
+			return true;
+		}else if(args[0].equalsIgnoreCase("forcesave")) {
     		if(args.length > 1) {
     			if(args[1].equalsIgnoreCase("config") || args[1].equalsIgnoreCase("heads")) {
     	        	sender.sendMessage(prefix + " Saving config!");
@@ -501,7 +513,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas","setname","addcommand","clearcommands","seecommands","purgepowerless","reloadconfig");
+		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas","setname","addcommand","clearcommands","seecommands","purgepowerless","reloadconfig", "fixheads");
 		switch (args.length) {
 		case 1:
 			return StringUtil.copyPartialMatches(args[0], commands, new ArrayList<String>(commands.size()));

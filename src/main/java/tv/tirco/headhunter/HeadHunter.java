@@ -14,10 +14,7 @@ import com.google.common.base.Charsets;
 
 import tv.tirco.headhunter.config.Config;
 import tv.tirco.headhunter.config.Messages;
-import tv.tirco.headhunter.database.DatabaseManager;
-import tv.tirco.headhunter.database.DatabaseManagerFactory;
-import tv.tirco.headhunter.database.SaveTimerTask;
-import tv.tirco.headhunter.database.UserManager;
+import tv.tirco.headhunter.database.*;
 import tv.tirco.headhunter.listeners.PlayerBreakBlock;
 import tv.tirco.headhunter.listeners.PlayerClickBlock;
 import tv.tirco.headhunter.listeners.PlayerJoinListener;
@@ -93,7 +90,9 @@ public class HeadHunter extends JavaPlugin {
             }
             
         }.runTaskLater(this, 20);
-
+		Bukkit.getOnlinePlayers().forEach(plr -> {
+			new PlayerProfileLoadingTask(plr).runTaskLaterAsynchronously(HeadHunter.plugin, 60);
+		});
 
 
     }

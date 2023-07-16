@@ -45,13 +45,7 @@ public class HeadFileManager {
 			MessageHandler.getInstance().log("Refusing to save heads - List was empty but no heads deleted.");
 			return;
 		}
-		//HashMap<Integer,String> headHints = Heads.getInstance().getHeadsHints();
-		for(Integer i : Heads.getInstance().getDeletedHeads()) {
-			if(yamlFile.isSet("heads.id"+ i)) {
-				yamlFile.set("heads.id" + i, null);
-				MessageHandler.getInstance().debug("Deleted " + i + " from Heads.yml");
-			}
-		}
+		yamlFile.set("heads", null);
 		for(Integer i : heads.keySet()) {
 			yamlFile.set("heads.id" + i + ".x", heads.get(i).getX());
 			yamlFile.set("heads.id" + i + ".y", heads.get(i).getY());

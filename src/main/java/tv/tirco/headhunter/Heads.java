@@ -1,11 +1,6 @@
 package tv.tirco.headhunter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
@@ -205,6 +200,39 @@ public class Heads {
 	/*
 	 * Head Management
 	 */
+
+	public void fixHeads() {
+		List<Integer> oldIds = new ArrayList<>();
+		Map<Integer, Integer> oldToNewId = new HashMap<>();
+		int currentCounter = 1;
+		for(int i = 0; i <= nextID; i++){
+			if(heads.containsKey(i)){
+				oldIds.add(i);
+				oldToNewId.put(i, currentCounter);
+				currentCounter++;
+			}
+		}
+		HeadHunter.headHunter.getLogger().info("Created new IDs for " + oldToNewId.size() + " heads, currentCounter: " + currentCounter);
+		HeadHunter.headHunter.getLogger().info("Sorting...");
+		HashMap<Integer,String> newHints = new HashMap<>();
+		HashBiMap<Integer, Location> newHeads = HashBiMap.create();
+		HashBiMap<Integer, String> newHeadNames = HashBiMap.create();
+		HashMap<Integer,List<String>> newCommands = new HashMap<>();
+
+		oldIds.forEach((old) -> {
+			int sorted = oldToNewId.get(old);
+			newHeads.put(sorted, heads.get(old).clone());
+			if(hints.containsKey(old)) newHints.put(sorted, hints.get(old));
+			if(headNames.containsKey(old)) newHeadNames.put(sorted, headNames.get(old));
+			if(commands.containsKey(old)) newCommands.put(sorted, new ArrayList<>(commands.get(old)));
+		});
+		hints = newHints;
+		heads = newHeads;
+		headNames = newHeadNames;
+		commands = newCommands;
+		nextID = currentCounter;
+		HeadHunter.headHunter.getLogger().info("Finished resorting all heads!");
+	}
 	
 	public int addHead(Location loc) {
 		if(heads.containsValue(loc)) {
@@ -382,6 +410,9 @@ public class Heads {
 		}
 		if(commands.containsKey(id)) {
 			commands.remove(id);
+		}
+		if(hints.containsKey(id)){
+			hints.remove(id);
 		}
 		
 	}
