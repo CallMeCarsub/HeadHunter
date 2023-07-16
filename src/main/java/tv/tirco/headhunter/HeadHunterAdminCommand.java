@@ -37,7 +37,15 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     	} 
     	
   //ForceSave
-		if(args[0].equalsIgnoreCase("fixheads")){
+		if(args[0].equalsIgnoreCase("resetallplayerdatanow")){
+			sender.sendMessage(prefix + " Clearing player data!");
+			UserManager.clearAll();
+			sender.sendMessage(prefix + " Reinitializing players!");
+			Bukkit.getOnlinePlayers().forEach(plr -> {
+				new PlayerProfileLoadingTask(plr).runTaskLaterAsynchronously(HeadHunter.plugin, 60);
+			});
+			return true;
+		}else if(args[0].equalsIgnoreCase("fixheads")){
 			sender.sendMessage(prefix + " Fixing heads!");
 			Heads.getInstance().fixHeads();
 			sender.sendMessage(prefix + " Saving heads!");

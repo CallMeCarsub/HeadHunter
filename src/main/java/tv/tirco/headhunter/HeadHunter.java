@@ -108,6 +108,13 @@ public class HeadHunter extends JavaPlugin {
 			new SaveTimerTask().runTaskTimer(this, saveIntervalTicks, saveIntervalTicks);
 		}
 
+		new BukkitRunnable(){
+			@Override
+			public void run() {
+				Heads.getInstance().updatedSortedList();
+			}
+		}.runTaskTimer(this, 60, 60);
+
 	}
 
 	private void registerListeners() {
