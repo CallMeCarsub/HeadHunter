@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -33,7 +34,8 @@ public class Heads {
 	private HashMap<Integer,String> hints;
 	private HashBiMap<Integer, Location> heads;
 	private HashBiMap<Integer, String> headNames;
-	private HashMap<Integer,String> commands;
+	private HashMap<Integer,List<String>> commands;
+	private List<Integer> deletedHeads;
 	
 	//Scoreboard
 	private HashMap<UUID,Integer> top;
@@ -51,8 +53,8 @@ public class Heads {
 		heads = HashBiMap.create();
 		hints = new HashMap<Integer,String>();
 		headNames = HashBiMap.create();
-		commands = new HashMap<Integer,String>();
-		
+		commands = new HashMap<Integer,List<String>>();
+		deletedHeads = new ArrayList<Integer>();
 		
 		
 		top = new HashMap<UUID,Integer>();
@@ -121,6 +123,22 @@ public class Heads {
 		
 		//MessageHandler.getInstance().debug("returning null");
 		return null;
+	}
+	
+	public List<String> getTopPlayerList() {
+		List<String> top = new ArrayList<String>();
+		if(this.sortedTop.isEmpty()) {
+			top.add("No top list available.");
+			return top;
+		}
+		int spot = 1;
+		for(UUID id : sortedTop.keySet()) {
+
+			OfflinePlayer oPlayer = Bukkit.getOfflinePlayer(id); 
+			top.add(ChatColor.GREEN + "#" + spot + ChatColor.WHITE + " - " + ChatColor.GOLD + oPlayer.getName() + ChatColor.WHITE + " - " + ChatColor.GOLD + sortedTop.get(id));
+			spot ++;
+		}
+		return top;
 	}
 	
 	public void updatedSortedList(){
@@ -271,13 +289,21 @@ public class Heads {
 	 */
 	
 	public String getHint(Integer i) {
+		return getHint(i, false);
+	}
+	
+	public String getHint(Integer i, boolean toSave) {
 		String name = "No name";
 		if(hasName(i)) {
 			name = getName(i);
 		}
 
-		String defaultHint = ChatColor.GREEN + "Name: " + ChatColor.translateAlternateColorCodes('&', name)
-		+ " " + ChatColor.GREEN + "ID: " + ChatColor.GOLD + i + "." + ChatColor.RESET + "\n";
+		String defaultHint = "";
+		if(!toSave) {
+			defaultHint = ChatColor.GREEN + "Name: " + ChatColor.translateAlternateColorCodes('&', name)
+			+ " " + ChatColor.GREEN + "ID: " + ChatColor.GOLD + i + "." + ChatColor.RESET + "\n";
+		}
+
 		if(hints.containsKey(i)) {
 			String hint = hints.get(i);
 			if(hint != null) {
@@ -286,6 +312,7 @@ public class Heads {
 		}
 		return defaultHint + "No hint available.";
 	}
+	
 		
 	public void setHint(int i, String s) {
 		if(s == null) {
@@ -305,15 +332,18 @@ public class Heads {
 	 * @param i - The ID of the head.
 	 * @param s - The command.
 	 */
-	public void setCommand(int i, String s) {
+	public void addCommand(int i, String s) {
 		if(s == null || s.isEmpty()) {
-			if(commands.containsKey(i)) {
-				commands.remove(i);
-				setChanged(true);
-			}
 			return;
 		}
-		commands.put(i, s);
+		List<String> commands = getCommands(i); //Can not be null.
+		commands.add(s);
+		this.commands.put(i, commands);
+		setChanged(true);
+	}
+	
+	public void clearCommands(int i) {
+		commands.put(i, new ArrayList<String>());
 		setChanged(true);
 	}
 	
@@ -322,18 +352,18 @@ public class Heads {
 	 * @param ID of the head you want to get the command of.
 	 * @return the command (as string).
 	 */
-	public String getCommand(int i) {
+	public List<String> getCommands(int i) {
 		if(commands.containsKey(i)) {
-			String hint = commands.get(i);
-			if(hint != null) {
+			List<String> commandList = commands.get(i);
+			if(commandList != null) {
 				return commands.get(i);
 			}
 		}
-		return "";
+		return new ArrayList<String>();
 	}
 	
 	public boolean hasCommand(int i) {
-		return commands.containsKey(i);
+		return commands.containsKey(i) && !commands.get(i).isEmpty();
 	}
 
 	/**
@@ -344,6 +374,7 @@ public class Heads {
 	public void deleteHead(int id) {
 		if(heads.containsKey(id)) {
 			heads.remove(id);
+			deletedHeads.add(id);
 			setChanged(true);
 		}
 		if(headNames.containsKey(id)) {
@@ -411,5 +442,49 @@ public class Heads {
 		}
 		return -1;
 	}
+	
+	/**
+	 * 
+	 * @param loc Location to check if it's near
+	 * @param distance Max distance of head
+	 * @param ignore List of heads to ignore.
+	 * @return
+	 */
+	public List<Location> getHeadsNear(Location loc, double distance, List<Integer> ignore) {
+		List<Location> test = new ArrayList<Location>();
+		for(Integer i : getHeads().keySet()) {
+			if(ignore.contains(i)) {
+				continue;
+			}
+			Location hLoc = getHeads().get(i);
+			if(hLoc.getWorld().equals(loc.getWorld())) {
+				if(hLoc.distance(loc) < distance) {
+					test.add(hLoc);
+				}
+			}
+		}
+		return test;
+	}
 
+	public Set<String> getHeadNames() {
+		return this.headNames.values();
+	}
+
+	
+	public void setCommands(Integer id, List<String> commands) {
+		this.commands.put(id,commands);
+	}
+
+	public boolean headsDeleted() {
+		return !deletedHeads.isEmpty();
+	}
+	
+
+	public List<Integer> getDeletedHeads() {
+		return deletedHeads;
+	}
+	
+	public void clearDeletedHeads() {
+		this.deletedHeads.clear();
+	}
 }

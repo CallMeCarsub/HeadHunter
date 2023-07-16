@@ -21,6 +21,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import tv.tirco.headhunter.config.Config;
 import tv.tirco.headhunter.database.PlayerData;
 import tv.tirco.headhunter.database.UserManager;
 
@@ -52,9 +53,14 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
         	sender.sendMessage(prefix + " Saving users!");
         	UserManager.saveAll();
         	return true;
-        	
-        	
-        	
+    	} else if(args[0].equalsIgnoreCase("purgepowerless")) {
+    		int purged = HeadHunter.db.purgePowerlessUsers();
+        	sender.sendMessage("Purged " + purged + " users from the database, as they had found 0 heads.");
+        	return true;
+    	} else if(args[0].equalsIgnoreCase("reloadconfig")) {
+    		Config.getInstance().reload();
+    		sender.sendMessage("Config has been reloaded!");
+    		return true;
         	//PLAYER ONLY
     	} else if(args[0].equalsIgnoreCase("add")){ //toggle on/off
     		if(!(sender instanceof Player)) {
@@ -241,7 +247,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		
     		ComponentBuilder message = new ComponentBuilder("");
     		String coords = loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
-    		String reply = prefix + "Head " + id + " is located at " + ChatColor.WHITE + coords;
+    		String reply = prefix + "Head " + id + " is located at " + ChatColor.WHITE + coords + ChatColor.DARK_AQUA +" in world: " + loc.getWorld().getName();
         	if(!(sender instanceof Player)) {
         		sender.sendMessage(reply);
         		return true;
@@ -251,7 +257,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
         		TextComponent string = new TextComponent(reply);
         		Text hint = new Text("Click for TP command. \n/gamemode spectator is recommended.");
         		string.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hint));
-        		string.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + coords));
+        		string.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tppos " + coords + " 90 0 " + loc.getWorld().getName()));
         		message.append(string);
         		player.spigot().sendMessage(message.create());
         		return true;
@@ -301,16 +307,36 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     		return true;
     		
     		
-    	} else if(args[0].equals("setcommand")) {
+    	} else if(args[0].equals("addcommand")) {
     		StringBuilder sb = new StringBuilder("");
     		for (int i = 2; i < args.length; i++) {
     		    sb.append(args[i]).append(' ');
     		}
     		String command = sb.toString().substring(0, sb.toString().length() - 1);
-    		Heads.getInstance().setCommand(id,command);
+    		Heads.getInstance().addCommand(id,command);
     		sender.sendMessage(ChatColor.GREEN + "Head " + id + " now has its command set as:");
     		sender.sendMessage(command);
     		
+    		return true;
+    	} else if(args[0].equals("seecommands")) {
+    		if(!Heads.getInstance().hasCommand(id)) {
+    			sender.sendMessage(ChatColor.RED + "The head with ID " + ChatColor.GREEN + id + ChatColor.RED + " has no commands set.");
+    			return true;
+    		}
+    		sender.sendMessage(ChatColor.GOLD + "Commands for Head: " + ChatColor.GREEN + id);
+    		for(String s : Heads.getInstance().getCommands(id)) {
+    			sender.sendMessage(ChatColor.WHITE + " - " + ChatColor.YELLOW + s);
+    		}
+    		return true;
+    	} else if(args[0].equals("clearcommands")) {
+    		StringBuilder sb = new StringBuilder("");
+    		for (int i = 2; i < args.length; i++) {
+    			sb.append(args[i]).append(' ');
+    		}
+    		String command = sb.toString().substring(0, sb.toString().length() - 1);
+    		Heads.getInstance().clearCommands(id);
+    		sender.sendMessage(ChatColor.GREEN + "Head " + id + " now has all commands cleared.");
+    		sender.sendMessage(command);
     		return true;
     	}
     	
@@ -456,6 +482,13 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
         										   "If no file is specified, both are saved.")));
         		forcesave.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha forcesave"));
         		message.append(forcesave);
+        		
+        		TextComponent purgepowerless = new TextComponent(ChatColor.YELLOW + "/hha purgepowerless\n");
+        		purgepowerless.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+        				new Text(ChatColor.WHITE + "Clears all users from the file, that has not\n" +
+        										   "found any heads. Warning: Can lagg a bit!")));
+        		purgepowerless.setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/hha purgepowerless"));
+        		message.append(purgepowerless);
     		}
     		
     		message.append(title);
@@ -468,7 +501,7 @@ public class HeadHunterAdminCommand implements CommandExecutor,TabCompleter {
     
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas","setname","setcommand");
+		List<String> commands = ImmutableList.of("help","add","find","sethint","delete","debug","notifyadmins","forcesave","setname","findforuser","seelistas","setname","addcommand","clearcommands","seecommands","purgepowerless","reloadconfig");
 		switch (args.length) {
 		case 1:
 			return StringUtil.copyPartialMatches(args[0], commands, new ArrayList<String>(commands.size()));

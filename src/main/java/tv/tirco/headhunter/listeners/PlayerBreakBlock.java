@@ -26,8 +26,10 @@ public class PlayerBreakBlock implements Listener {
 			event.setCancelled(true);
 			Player player = event.getPlayer();
 			//int headID = Heads.getInstance().getHeadId(loc);
-			player.sendMessage(MessageHandler.getInstance().prefix 
-					+" You can't break this block, as it's part of HeadHunters. It needs to be removed from the database first.");
+			if(player.hasPermission("headhunter.admin")) {
+				player.sendMessage(MessageHandler.getInstance().prefix 
+						+" You can't break this block, as it's part of HeadHunters. It needs to be removed from the database first.");
+			}
 		}
 		
 	}

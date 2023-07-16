@@ -1,6 +1,7 @@
 package tv.tirco.headhunter.database;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -64,6 +65,10 @@ public class PlayerData {
 		return profile.getFound();
 	}
 	
+	public List<Integer> getFoundIDs() {
+		return profile.getFoundIDs();
+	}
+	
 	public void setFound(HashMap<Integer,Boolean> found) {
 		profile.setFound(found);
 	}
@@ -112,6 +117,10 @@ public class PlayerData {
 
 	public FixedMetadataValue getPlayerMetadata() {
 		return playerMetadata;
+	}
+	
+	public List<Integer> getNotFound(){
+		return profile.getNotFoundIDs();
 	}
 
 }

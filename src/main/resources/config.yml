@@ -12,7 +12,7 @@ setting:
 ##Can be turned on temporarily with the /headhunteradmin debug command
     debugtoadmins: false
 
-##Should the heads emit particles? Not yet implemented.
+##Should the heads emit particles?
     particles: true
 
 ##Should we announce to all players when a player has found all heads? 
@@ -20,12 +20,14 @@ setting:
 
 ##How often should we save the head data? (in minutes)
 ##Heads are also saved when a player leaves the server.
-##Only players that have found any heads are saved.
     autosaveinterval: 15
 
+## Automatically delete users that haven't been on the server in a while:
 ##How long ago should a player have logged in before we purge their data? (Months)
 ##0 = never purge.
-    purgeafter: 0
+    purgeafter: 3
+##Should only players that have no progress get purged from the database? 
+    onlypurgeemptyplayers: true
 
 ##Do you need the headhunter.basic permission to unlock heads?
     huntingrequiresperm: false
@@ -34,27 +36,39 @@ setting:
 ##
     topamountsaved: 20
     
-##Should we run commands when heads are found (if a command is set?
+##Should we run commands when heads are found (if a command is set?)
 ##These commands are run from console.
     commandOnHeadFound: true
-
+ExtraRewards:
+##These rewards are added when the player has found N amount of heads.
+##It can run multiple commands. The commands are run from console.
+##Be careful with give commands, as the plugin does not check if their inventory is full.
+##If the player "ufinds" a head these can trigger again. (Only happens if admins do stuff)
+##You can also use the "ALL" key, which will trigger when all heads have been found.*
+##Arguments: <playername>, <id>, <found>
+    1:
+        - msg <playername> Nice! You have collected <found> head!
+        - msg <playername> I'll be watching you.
+    10: []
+    ALL: []
 ############
 ##Messages##
 ############
-messages:
-##What should the plugins prefix be?
-    prefix: "&3[&bHeadHunter&3] "
-##How should we announce a player that has found all skulls?
-##Announcefindingall must be set to true.
-##<found>, <max>, <playername>
-    announcefindingallmessage: "&6<playername>&f has found all &c<max>&f heads!"
+##EDIT: MESSAGES ARE NOW FOUND IN messages.yml
+# messages:
+# ##What should the plugins prefix be?
+    # prefix: "&3[&bHeadHunter&3] "
+# ##How should we announce a player that has found all skulls?
+# ##Announcefindingall must be set to true.
+# ##<found>, <max>, <playername>
+    # announcefindingallmessage: "&6<playername>&f has found all &c<max>&f heads!"
 
-##What should we tell a player that is hunting for heads?
-##<found>, <max>, <playername>, <idfound>, <headname>
-    countmessage: "&aYou just found &f<headname>&a. In total you have found &6<found>&f/<max> &aheads."
-    countcommandmessage: "&aYou have found &6<found>&a out of &6<max>&a heads."
+# ##What should we tell a player that is hunting for heads?
+# ##<found>, <max>, <playername>, <idfound>, <headname>
+    # countmessage: "&aYou just found &f<headname>&a. In total you have found &6<found>&f/<max> &aheads."
+    # countcommandmessage: "&aYou have found &6<found>&a out of &6<max>&a heads."
     
-##What should we tell a player that already found a head?
-##<found>, <max>, <playername>, <idfound>, <headname>
-    repeatmessage: "&aYou have already found this head. &aID: &6<idfound>&a, Name: &6<headname>"
+# ##What should we tell a player that already found a head?
+# ##<found>, <max>, <playername>, <idfound>, <headname>
+    # repeatmessage: "&aYou have already found this head. &aID: &6<idfound>&a, Name: &6<headname>"
 

@@ -20,6 +20,10 @@ public class Config extends AutoUpdateConfigLoader {
 
 		return instance;
 	}
+	
+	public void reload() {
+		instance = new Config();
+	}
 
 	@Override
 	protected void loadKeys() {
@@ -33,15 +37,15 @@ public class Config extends AutoUpdateConfigLoader {
 
 		if (getDebug()) {
 			MessageHandler.getInstance().setDebugState(true);
-			MessageHandler.getInstance().debug("Debugging has been enabled.");
+			MessageHandler.getInstance().debug(Messages.getInstance().getMessage("debugging-enabled"));
 		}
 		if (getDebugToAdmins()) {
 			MessageHandler.getInstance().setDebugState(true);
-			MessageHandler.getInstance().debug("Debug loggint to admins has been enabled.");
+			MessageHandler.getInstance().debug(Messages.getInstance().getMessage("debugging-to-admins-enabled"));
 		}
 
 		// If the reason list is empty, keys are valid.
-			MessageHandler.getInstance().updatePrefix(getMessagePrefix());
+			MessageHandler.getInstance().updatePrefix(Messages.getInstance().getMessagePrefix());
 		return noErrorsInConfig(reason);
 	}
 
@@ -61,9 +65,6 @@ public class Config extends AutoUpdateConfigLoader {
 
 	// Config Getters
 	/* General Settings */
-	public String getLocale() {
-		return config.getString("General.Locale", "en_us");
-	}
 
 	public boolean getDebug() {
 		return config.getBoolean("setting.debug", false);
@@ -90,27 +91,13 @@ public class Config extends AutoUpdateConfigLoader {
 		return config.getInt("setting.purgeafter", 0);
 	}
 	
+	public boolean onlyPurgeIfPowerless() {
+		return config.getBoolean("setting.onlypurgeemptyplayers", true);
+	}
+	
 	public boolean getAnnounceFindAll() {
 		return config.getBoolean("setting.announcefindingall", true);
 	}
-	
-	/* MESSAGES */
-	public String getMessagePrefix() {
-		return config.getString("messages.prefix", "&3[&bHeadHunter&3] ");
-	}
-	
-	public String getMessageAnnounceFindAll() {
-		return config.getString("messages.announcefindingallmessage:", "&6<playername>&f has found all &c<max>&f heads!");
-	}
-	
-	public String getMessageCount() {
-		return config.getString("messages.countmessage", "&aYou have found &6<found>&a out of &6<max>&a heads. This head had ID <idfound>.");
-	}
-	
-	public String getMessageAlreadyFound() {
-		return config.getString("messages.repeatmessage", "&aYou have already found this skull.");
-	}
-
 	
 	public boolean getNeedPermToHunt() {
 		return config.getBoolean("setting.huntingrequiresperm",false);
@@ -120,8 +107,20 @@ public class Config extends AutoUpdateConfigLoader {
 	public int getTopAmount() {
 		return config.getInt("setting.topamountsaved", 10);
 	}
-
-	public String getMessageCountCommand() {
-		return config.getString("messages.countcommandmessage", "&aYou have found &6<found>&a out of &6<max>&a heads.");
+	
+	
+	public List<String> getRewardCommands(int amount) {
+		if(config.isSet("ExtraRewards."+amount)) {
+			return config.getStringList("ExtraRewards."+amount);
+		} else {
+			return new ArrayList<String>();
+		}
+	}
+	public List<String> getMaxRewardCommands() {
+		if(config.isSet("ExtraRewards.ALL")) {
+			return config.getStringList("ExtraRewards.ALL");
+		} else {
+			return new ArrayList<String>();
+		}
 	}
 }

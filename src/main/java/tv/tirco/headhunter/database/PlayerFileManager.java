@@ -52,7 +52,7 @@ public class PlayerFileManager implements DatabaseManager {
 
 	}
 
-	public void purgePowerlessUsers() {
+	public int purgePowerlessUsers() {
 		//Should never be used? - Powerless users are not saved.
 		int purgedUsers = 0;
 
@@ -71,25 +71,8 @@ public class PlayerFileManager implements DatabaseManager {
 
 				while ((line = in.readLine()) != null) {
 					ArrayList<String> character = new ArrayList<String>(Arrays.asList(line.split(":")));
-					boolean powerless = false;
+					boolean powerless = isPowerLess(character);
 					
-					//String lastSeen = character.get(2);
-					//String uuid = character.get(1);
-					//String name = character.get(0);
-					
-					character.remove(character.size()-1); //Remove BREAK
-					character.remove(2); //Remove LastSeen
-					character.remove(1); //Remove UUID
-					character.remove(0); //Remove Name
-					
-					powerless = true;
-					for(String s : character) {
-						
-						String[] found = s.split("=");
-						if(found[1].equalsIgnoreCase("1")) {
-							powerless = false;
-						}
-					}
 
 					// If they're still around, rewrite them to the file.
 					if (!powerless) {
@@ -124,19 +107,37 @@ public class PlayerFileManager implements DatabaseManager {
 		}
 
 		MessageHandler.getInstance().log("Purged " + purgedUsers + " users from the database.");
+		return purgedUsers;
 
 	}
 
-	@SuppressWarnings("deprecation")
+	private boolean isPowerLess(ArrayList<String> character) {
+		//String lastSeen = character.get(2);
+		//String uuid = character.get(1);
+		//String name = character.get(0);
+		
+		character.remove(character.size()-1); //Remove BREAK
+		character.remove(3); //Remove AmountFound
+		character.remove(2); //Remove LastSeen
+		character.remove(1); //Remove UUID
+		character.remove(0); //Remove Name
+		
+		boolean powerless = true;
+		for(String s : character) {
+			if(s.substring(s.length() - 1).equalsIgnoreCase("1")) {
+				powerless = false;
+				break;
+			}
+		}
+		
+		return powerless;
+	}
+
 	public void purgeOldUsers() {
 		int removedPlayers = 0;
 		long currentTime = System.currentTimeMillis();
 		
-		Boolean notEnabled = true;
-		if(notEnabled) {
-			return;
-		}
-		
+
 		if(Config.getInstance().getOldUsersCutoff() == 0) {
 			return;
 		}
@@ -147,16 +148,16 @@ public class PlayerFileManager implements DatabaseManager {
 		FileWriter out = null;
 		String usersFilePath = HeadHunter.getUsersFilePath();
 
-		// This code is O(n) instead of O(n�)
 		synchronized (fileWritingLock) {
 			try {
 				in = new BufferedReader(new FileReader(usersFilePath));
 				StringBuilder writer = new StringBuilder();
 				String line;
+				
 
 				while ((line = in.readLine()) != null) {
 					String[] character = line.split(":");
-					String name = character[PLAYERNAME_POSITION];
+					String uuid = character[UUID_POSITION];
 					long lastPlayed = 0;
 					boolean rewrite = false;
 					try {
@@ -164,12 +165,18 @@ public class PlayerFileManager implements DatabaseManager {
 					} catch (NumberFormatException e) {
 					}
 					if (lastPlayed == 0) {
-						OfflinePlayer player = HeadHunter.plugin.getServer().getOfflinePlayer(name);
+						//Last played not found in config, getting last time player was online on server
+						OfflinePlayer player = HeadHunter.plugin.getServer().getOfflinePlayer(UUID.fromString(uuid));
 						lastPlayed = player.getLastPlayed();
 						rewrite = true;
 					}
+					
+					boolean powerless = true;
+					if(Config.getInstance().onlyPurgeIfPowerless()) {
+						powerless = isPowerLess(new ArrayList<String>(Arrays.asList(line.split(":"))));
+					}
 
-					if (currentTime - lastPlayed > PURGE_TIME) {
+					if ((currentTime - lastPlayed > PURGE_TIME) && powerless) {
 						removedPlayers++;
 					} else {
 						if (rewrite) {
@@ -207,7 +214,9 @@ public class PlayerFileManager implements DatabaseManager {
 			}
 		}
 
-		MessageHandler.getInstance().log("Purged " + removedPlayers + " users from the database.");
+		MessageHandler.getInstance().log("Purged " + removedPlayers + " users from the database due to age.");
+		MessageHandler.getInstance().log("Purge time: " + Config.getInstance().getOldUsersCutoff() + " months.");
+		MessageHandler.getInstance().log("Only purge powerless: "+ Config.getInstance().onlyPurgeIfPowerless());
 	}
 
 	public boolean removeUser(String playerName) {

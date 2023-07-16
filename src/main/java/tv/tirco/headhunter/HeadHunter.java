@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.base.Charsets;
 
 import tv.tirco.headhunter.config.Config;
+import tv.tirco.headhunter.config.Messages;
 import tv.tirco.headhunter.database.DatabaseManager;
 import tv.tirco.headhunter.database.DatabaseManagerFactory;
 import tv.tirco.headhunter.database.SaveTimerTask;
@@ -81,6 +82,8 @@ public class HeadHunter extends JavaPlugin {
             this.papi = true;
 		}
         
+        db.purgeOldUsers();
+        
         //Load our heads after worlds and all are loaded.
         new BukkitRunnable() {
             
@@ -97,7 +100,7 @@ public class HeadHunter extends JavaPlugin {
 
 	private void scheduleTasks() {
 		if(Config.getInstance().getUseParticles()) {
-			new ParticleRunnable().runTaskTimer(this, 60, 60);
+			new ParticleRunnable().runTaskTimerAsynchronously(this, 60, 60);
 		}
 		
 		long saveInterval = Config.getInstance().getSaveInterval();
@@ -122,6 +125,7 @@ public class HeadHunter extends JavaPlugin {
 	}
 	
 	private void loadConfig() {
+		Messages.getInstance();
 		Config.getInstance();
 	}
 

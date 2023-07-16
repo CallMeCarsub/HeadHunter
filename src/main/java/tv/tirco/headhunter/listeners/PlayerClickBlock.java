@@ -12,10 +12,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
-import net.md_5.bungee.api.ChatColor;
 import tv.tirco.headhunter.Heads;
 import tv.tirco.headhunter.MessageHandler;
 import tv.tirco.headhunter.config.Config;
+import tv.tirco.headhunter.config.Messages;
 import tv.tirco.headhunter.database.PlayerData;
 import tv.tirco.headhunter.database.UserManager;
 
@@ -58,26 +58,26 @@ public class PlayerClickBlock implements Listener {
 			int headID = Heads.getInstance().getHeadId(loc);
 			if(pData.hasFound(headID)) {
 				//Send Already Found Message.
-				String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageAlreadyFound(), p);
+				String s = MessageHandler.getInstance().translateTags(Messages.getInstance().getMessageAlreadyFound(), p, headID);
 				p.sendMessage(s);
 				return;
 			}
 			
 			pData.find(headID);
 			//Send Counting Message
-			String s = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageCount(), p);
-			s = s.replace("<idfound>", headID+"");
-			if(s.contains("<headname>")) { //Move to MessageHandler?
-				String name = "";
-				if(Heads.getInstance().hasName(headID)) {
-					//Grab custom name
-					name = ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getName(headID));
-				} else {
-					//Get ID as name.
-					name = "#" + headID;
-				}
-				s = s.replace("<headname>", name);
-			}
+			String s = MessageHandler.getInstance().translateTags(Messages.getInstance().getMessageCount(), p, headID);
+//			s = s.replace("<idfound>", headID+"");
+//			if(s.contains("<headname>")) { //Move to MessageHandler?
+//				String name = "";
+//				if(Heads.getInstance().hasName(headID)) {
+//					//Grab custom name
+//					name = ChatColor.translateAlternateColorCodes('&', Heads.getInstance().getName(headID));
+//				} else {
+//					//Get ID as name.
+//					name = "#" + headID;
+//				}
+//				s = s.replace("<headname>", name);
+//			}
 			
 			p.sendMessage(s);
 			
@@ -85,12 +85,15 @@ public class PlayerClickBlock implements Listener {
 			if(Config.getInstance().runCommandOnHeadFound() && Heads.getInstance().hasCommand(headID)) {
 				//Parameters %playername% %id% %found%
 				//Replace our parameters.
-				String command = Heads.getInstance().getCommand(headID);
-				command = command.replace("<playername>", p.getName());
-				command = command.replace("<player>", p.getName());
-				command = command.replace("<id>", headID+"");
-				command = command.replace("<found>", pData.getAmountFound()+"");
-				
+				for(String command : Heads.getInstance().getCommands(headID)) {
+					command = parseCommandString(command, p, headID, pData);
+					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+				}
+
+			}
+			
+			for(String command : Config.getInstance().getRewardCommands(pData.getAmountFound())) {
+				command = parseCommandString(command, p, headID, pData);
 				//Run our command
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
 			}
@@ -100,7 +103,7 @@ public class PlayerClickBlock implements Listener {
 			
 			//Player has found all!
 			if(pData.getAmountFound() >= Heads.getInstance().getHeadAmount()) {
-				String announce = MessageHandler.getInstance().translateTags(Config.getInstance().getMessageAnnounceFindAll(), p);
+				String announce = MessageHandler.getInstance().translateTags(Messages.getInstance().getMessageAnnounceFindAll(), p);
 				if(Config.getInstance().getAnnounceFindAll()) {
 					//Send to all players.
 					for(Player player : Bukkit.getOnlinePlayers()) {
@@ -111,6 +114,12 @@ public class PlayerClickBlock implements Listener {
 				} else {
 					//Only send to finding player
 					p.sendMessage(announce);
+				}
+				for(String command : Config.getInstance().getMaxRewardCommands()) {
+					command = parseCommandString(command, p, headID, pData);
+					
+					//Run our command
+					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
 				}
 				p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 2, 2);
 			}
@@ -123,6 +132,15 @@ public class PlayerClickBlock implements Listener {
 			return;
 		}
 		
+	}
+	
+	private String parseCommandString(String command, Player p, int headID, PlayerData pData) {
+		command = command.replace("<playername>", p.getName());
+		command = command.replace("<player>", p.getName());
+		command = command.replace("<id>", headID+"");
+		command = command.replace("<found>", pData.getAmountFound()+"");
+		
+		return command;
 	}
 
 }

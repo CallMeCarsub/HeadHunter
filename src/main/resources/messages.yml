@@ -1,0 +1,36 @@
+messages:
+##What should the plugins prefix be?
+    prefix: "&3[&bHeadHunter&3] "
+##How should we announce a player that has found all skulls?
+##Announcefindingall must be set to true.
+##<found>, <max>, <playername>
+    announcefindingallmessage: "&6<playername>&f has found all &c<max>&f heads!"
+
+##What should we tell a player that is hunting for heads?
+##<found>, <max>, <playername>, <idfound>, <headname>
+    countmessage: "&aYou just found &f<headname>&a. In total you have found &6<found>&f/<max> &aheads."
+    countcommandmessage: "&aYou have found &6<found>&a out of &6<max>&a heads."
+    
+##What should we tell a player that already found a head?
+##<found>, <max>, <playername>, <idfound>, <headname>
+    repeatmessage: "&aYou have already found this head. &aID: &6<idfound>&a, Name: &6<headname>"
+
+    debugging-enabled: "Debugging has been enabled."
+    debugging-to-admins-enabled: "Debug logging to admins has been enabled."
+    
+##/Headhunter command
+    this-command-can-only-be-used-by-players: "This command can only be used by players."
+    help: "Help:"
+    help-list: "&b/hh list &7- List the heads you have and have not found."
+    help-count: "&b/hh count &7- Shows the amount of heads you have found."
+    help-hint: "&b/hh hint <name> &7- Shows you a hint for the specified head - or a random one."
+    help-top: "&b/hh top &7- Get the list of the users that have found the most heads."
+    
+    ##Player have found all hints but expects a random hint?
+    error-no-hint-found-all: "&cCan not select random hint when you have found all heads!"
+    error-could-not-parse: "Could not parse %s to a number or a headname. Keep in mind that some heads have colorcodes."
+    ##The error below mainly happens if a player runs a command before they have been loaded from the database.
+    error-unable-to-do-that-now: "Unable to do this at this time."
+    error-please-wait-until-load: "&cPlease wait until your profile is properly loaded."
+    
+    list-header: "&6-- Here is a list of all heads you can find. --"

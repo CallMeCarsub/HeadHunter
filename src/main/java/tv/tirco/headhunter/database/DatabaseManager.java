@@ -9,7 +9,7 @@ public interface DatabaseManager {
 	
 	// one month in milliseconds.
 	public final long PURGE_TIME = 2630000000L * Config.getInstance().getOldUsersCutoff();
-
+	
 //	/**
 //	 * Purge users with a level of 0 from the database.
 //	 */
@@ -45,6 +45,7 @@ public interface DatabaseManager {
 	 */
 	public void newUser(String playerName, UUID uuid);
 
+	public int purgePowerlessUsers();
 //	/**
 //	 * Load a player from the database.
 //	 * 
