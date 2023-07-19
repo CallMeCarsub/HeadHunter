@@ -5,6 +5,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.cacheddata.CachedPermissionData;
+import net.luckperms.api.model.data.DataType;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.Node;
+import net.luckperms.api.node.NodeEqualityPredicate;
+import net.luckperms.api.query.QueryOptions;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -171,14 +179,19 @@ public class Heads {
 	    List<Entry<UUID,Integer>> list = new ArrayList<>(sortedMap.entrySet());
 	    
 	    int sorted = 0;
-
+		LuckPerms luckPerms = LuckPermsProvider.get();
 	    for( int i = list.size() -1; i >= 0 ; i --){
 	        Entry<UUID,Integer> e = list.get(i);
-	        reverseMap.put(e.getKey(), e.getValue());
-	        sorted++;
-	        if(sorted >= maxAmount) {
-	        	break;
-	        }
+			User user = luckPerms.getUserManager().loadUser(e.getKey()).join();
+			CachedPermissionData cachedPermissionData = user.getCachedData().getPermissionData();
+			// if bypass no leaderboard or they don't have a no leaderboard
+			if(!cachedPermissionData.checkPermission("cmc.events.noleaderboard").asBoolean()) {
+				reverseMap.put(e.getKey(), e.getValue());
+				sorted++;
+			}
+			if (sorted >= maxAmount) {
+				break;
+			}
 	    }
 	    return reverseMap;
 	}
